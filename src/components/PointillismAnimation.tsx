@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const WORDS = ['MASTER', 'CRM', 'INNOVA', 'GROW', 'FLOW'];
 const PARTICLE_COUNT = 4000;
+const BACKGROUNDS = ['/bg1.png', '/bg2.png', '/bg3.png'];
 
 class Particle {
   x: number;
@@ -46,6 +47,14 @@ class Particle {
 
 export default function PointillismAnimation() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [bgIndex, setBgIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBgIndex((prev) => (prev + 1) % BACKGROUNDS.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -145,9 +154,8 @@ export default function PointillismAnimation() {
     };
 
     const render = () => {
-      // Clear with slight transparency for a subtle trail effect
-      ctx.fillStyle = 'rgba(241, 245, 249, 0.4)'; // slate-100
-      ctx.fillRect(0, 0, width, height);
+      // Clear canvas so the background images can show through
+      ctx.clearRect(0, 0, width, height);
 
       particles.forEach((p) => {
         p.update();
@@ -179,9 +187,20 @@ export default function PointillismAnimation() {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="w-full h-full block bg-slate-100"
-    />
+    <div className="w-full h-full relative bg-slate-50">
+      {BACKGROUNDS.map((bg, index) => (
+        <div
+          key={bg}
+          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${
+            index === bgIndex ? 'opacity-30' : 'opacity-0'
+          }`}
+          style={{ backgroundImage: `url('${bg}')` }}
+        />
+      ))}
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full block relative z-10"
+      />
+    </div>
   );
 }
