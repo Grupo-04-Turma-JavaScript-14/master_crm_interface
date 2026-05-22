@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Moon, Sun } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Intro() {
@@ -11,6 +11,19 @@ export default function Intro() {
   const isNavigatingRef = useRef(false);
   const touchProgressRef = useRef(0);
   const hasTouchedRef = useRef(false);
+  
+  // Theme state
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('master_crm_theme') === 'dark';
+  });
+  const isDarkModeRef = useRef(isDarkMode);
+
+  const toggleTheme = () => {
+      const newTheme = !isDarkMode;
+      setIsDarkMode(newTheme);
+      isDarkModeRef.current = newTheme;
+      localStorage.setItem('master_crm_theme', newTheme ? 'dark' : 'light');
+  };
 
   const handleAccess = () => {
       // Just trigger the connection animation first
@@ -163,6 +176,9 @@ export default function Intro() {
       const maxSlide = isMobile ? 200 : 400;
       const slideDistance = (maxSlide * (1 - easeOut)) + currentGap;
 
+      // Dynamic color based on theme
+      const handsColor = isDarkModeRef.current ? '#e5e5e5' : '#404040';
+
       // PASS 1: Draw Hands (Layer 1)
       for (let i = 0; i < cols; i++) {
         for (let j = 0; j < rows; j++) {
@@ -194,8 +210,8 @@ export default function Intro() {
                   const moveY = Math.cos(drawY * 0.003 + time * 0.02) * 8;
                   
                   const fadeAlpha = Math.min(1, time / 60);
-                  ctx.globalAlpha = 0.8 * fadeAlpha; 
-                  ctx.fillStyle = '#404040';
+                  ctx.globalAlpha = (isDarkModeRef.current ? 0.6 : 0.8) * fadeAlpha; 
+                  ctx.fillStyle = handsColor;
                   
                   ctx.beginPath();
                   ctx.arc(drawX + moveX, drawY + moveY, 1.5, 0, Math.PI * 2);
@@ -249,11 +265,11 @@ export default function Intro() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex flex-col items-center justify-center relative overflow-hidden">
+    <div className={`min-h-screen transition-colors duration-1000 ${isDarkMode ? 'bg-[#050505]' : 'bg-[#fafafa]'} flex flex-col items-center justify-center relative overflow-hidden`}>
       
       {/* Flash Screen Overlay triggered exactly when hands touch */}
       <div 
-        className={`absolute inset-0 bg-white z-50 pointer-events-none transition-opacity duration-300 ease-in ${isFlashActive ? 'opacity-100' : 'opacity-0'}`} 
+        className={`absolute inset-0 z-50 pointer-events-none transition-opacity duration-300 ease-in ${isFlashActive ? 'opacity-100' : 'opacity-0'} ${isDarkMode ? 'bg-black' : 'bg-white'}`} 
       />
 
       {/* Animated Background */}
@@ -283,13 +299,34 @@ export default function Intro() {
           </svg>
         </div>
         
-        <button 
-          onClick={handleAccess}
-          className="cursor-pointer text-xs sm:text-sm font-bold text-black bg-white border-2 border-black px-6 sm:px-8 py-2 sm:py-2.5 rounded-full hover:bg-neutral-50 transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5 w-full sm:w-auto max-w-[200px]"
-        >
-          Acessar Agora
-        </button>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={toggleTheme} 
+            className={`p-2 rounded-full border-2 transition-all cursor-pointer ${isDarkMode ? 'border-neutral-800 text-white hover:bg-neutral-900 hover:border-neutral-600' : 'border-neutral-200 text-black hover:bg-neutral-100 hover:border-black'}`}
+            title="Alternar Tema"
+          >
+            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+
+          <button 
+            onClick={handleAccess}
+            className={`cursor-pointer text-xs sm:text-sm font-bold border-2 px-6 sm:px-8 py-2 sm:py-2.5 rounded-full transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5 w-full sm:w-auto max-w-[200px] ${
+              isDarkMode ? 'bg-black border-neutral-700 text-white hover:bg-neutral-900 hover:border-neutral-500' : 'bg-white border-black text-black hover:bg-neutral-50'
+            }`}
+          >
+            Acessar Agora
+          </button>
+        </div>
       </header>
+
+      {/* Footer with Participants Names */}
+      <footer className="absolute bottom-6 left-0 w-full z-20 flex justify-center items-center px-4 animate-fade-in-up" style={{ animationDelay: '800ms' }}>
+        <p className={`text-xs sm:text-sm font-medium text-center tracking-wide px-4 py-1 rounded-full backdrop-blur-sm transition-colors duration-1000 ${
+          isDarkMode ? 'bg-black/50 text-neutral-500' : 'bg-[#fafafa]/80 text-neutral-400'
+        }`}>
+          Desenvolvido por: <span className={isDarkMode ? 'text-neutral-300' : 'text-neutral-600'}>João Henrique, Mariana, Marlos, Mirelly, Samara & Henrique</span>
+        </p>
+      </footer>
     </div>
   );
 }
