@@ -1,11 +1,24 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Moon, Sun } from 'lucide-react';
 import PointillismAnimation from '../components/PointillismAnimation';
 
 export default function Login() {
   const navigate = useNavigate();
   const [isRegistering, setIsRegistering] = useState(false);
-  
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('master_crm_theme') === 'dark';
+  });
+
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    localStorage.setItem('master_crm_theme', newTheme ? 'dark' : 'light');
+    
+    // Dispatch a custom event to notify other components (like Intro.tsx if it was active, though they don't share a screen)
+    window.dispatchEvent(new Event('themeChange'));
+  };
+
   // Form fields
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -28,33 +41,40 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white font-sans text-slate-900">
+    <div className={`min-h-screen flex font-sans transition-colors duration-1000 ${isDarkMode ? 'bg-[#050505] text-white' : 'bg-white text-slate-900'}`}>
       {/* Left side - Animation */}
-      <div className="hidden md:block w-1/2 bg-slate-100 relative overflow-hidden">
+      <div className={`hidden md:block w-1/2 relative overflow-hidden transition-colors duration-1000 ${isDarkMode ? 'bg-[#0a0a0a]' : 'bg-slate-100'}`}>
         <PointillismAnimation />
       </div>
 
       {/* Right side - Form */}
       <div className="w-full md:w-1/2 flex flex-col relative p-8">
-        <div className="flex-1 flex items-center justify-center w-full max-w-[420px] mx-auto">
+        
+        {/* Theme Toggle Button */}
+        <div className="absolute top-6 right-6 z-10 animate-fade-in-down">
+          <button
+            onClick={toggleTheme}
+            className={`p-2 rounded-full border-2 transition-all cursor-pointer ${isDarkMode ? 'border-neutral-800 text-white hover:bg-neutral-900 hover:border-neutral-600' : 'border-neutral-200 text-black hover:bg-neutral-100 hover:border-black'}`}
+            title="Alternar Tema"
+          >
+            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+        </div>
+
+        <div className="flex-1 flex items-center justify-center w-full max-w-[420px] mx-auto mt-8 sm:mt-0">
           <div className="w-full flex flex-col">
             {/* Logo */}
             <div className="flex justify-center mb-10">
-              <svg width="180" height="30" viewBox="0 0 220 36" className="sm:w-[220px] sm:h-[36px]">
+              <svg viewBox="0 0 1402 1122" className={`w-32 sm:w-48 h-auto transition-all ${isDarkMode ? 'invert opacity-90' : 'opacity-100'}`}>
                 <defs>
-                  <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#a855f7" />
-                    <stop offset="50%" stopColor="#ec4899" />
-                    <stop offset="100%" stopColor="#eab308" />
-                  </linearGradient>
-                  <pattern id="dotMaskPattern" x="0" y="0" width="3.5" height="3.5" patternUnits="userSpaceOnUse">
-                    <circle cx="1.75" cy="1.75" r="1.4" fill="white" />
+                  <pattern id="loginDotMaskPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <circle cx="10" cy="10" r="8" fill="white" />
                   </pattern>
-                  <mask id="dotsMask">
-                    <rect width="100%" height="100%" fill="url(#dotMaskPattern)" />
+                  <mask id="loginDotsMask">
+                    <rect width="100%" height="100%" fill="url(#loginDotMaskPattern)" />
                   </mask>
                 </defs>
-                <text x="110" y="28" fontSize="28" fontWeight="900" letterSpacing="2" fill="url(#textGrad)" mask="url(#dotsMask)" textAnchor="middle">MASTER CRM</text>
+                <image href="/logo_master.svg" width="1402" height="1122" mask="url(#loginDotsMask)" />
               </svg>
             </div>
 
@@ -63,9 +83,9 @@ export default function Login() {
               <h2 className="text-3xl font-bold mb-2 tracking-tight">
                 {isRegistering ? 'Crie sua conta' : 'Bem-vindo de volta!'}
               </h2>
-              <p className="text-slate-500 text-sm">
-                {isRegistering 
-                  ? 'Preencha seus dados para começar a usar a plataforma.' 
+              <p className={`text-sm ${isDarkMode ? 'text-neutral-400' : 'text-slate-500'}`}>
+                {isRegistering
+                  ? 'Preencha seus dados para começar a usar a plataforma.'
                   : 'Seu trabalho, sua equipe, seu fluxo — tudo em um só lugar.'}
               </p>
             </div>
@@ -78,7 +98,11 @@ export default function Login() {
                     type="text"
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm placeholder-slate-400 transition-shadow"
+                    className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent text-sm transition-shadow ${
+                      isDarkMode 
+                        ? 'bg-neutral-900 border-neutral-800 text-white placeholder-neutral-500 focus:ring-white' 
+                        : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400 focus:ring-black'
+                    }`}
                     placeholder="Nome completo"
                     required
                   />
@@ -90,7 +114,11 @@ export default function Login() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm placeholder-slate-400 transition-shadow"
+                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent text-sm transition-shadow ${
+                    isDarkMode 
+                      ? 'bg-neutral-900 border-neutral-800 text-white placeholder-neutral-500 focus:ring-white' 
+                      : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400 focus:ring-black'
+                  }`}
                   placeholder="Digite seu e-mail"
                   required
                 />
@@ -101,7 +129,11 @@ export default function Login() {
                   type="password"
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm placeholder-slate-400 transition-shadow"
+                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent text-sm transition-shadow ${
+                    isDarkMode 
+                      ? 'bg-neutral-900 border-neutral-800 text-white placeholder-neutral-500 focus:ring-white' 
+                      : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400 focus:ring-black'
+                  }`}
                   placeholder={isRegistering ? "Crie uma senha" : "Sua senha"}
                   required
                 />
@@ -109,25 +141,29 @@ export default function Login() {
 
               <button
                 type="submit"
-                className={`w-full cursor-pointer text-sm font-bold border-2 px-6 py-3 rounded-full transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5 bg-white border-black text-black hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black ${isRegistering ? 'mt-2' : ''}`}
+                className={`w-full cursor-pointer text-sm font-bold border-2 px-6 py-3 rounded-full transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                  isDarkMode 
+                    ? 'bg-black border-neutral-700 text-white hover:bg-neutral-900 focus:ring-neutral-700' 
+                    : 'bg-white border-black text-black hover:bg-neutral-50 focus:ring-black'
+                } ${isRegistering ? 'mt-2' : ''}`}
               >
                 {isRegistering ? 'Cadastrar' : 'Entrar'}
               </button>
             </form>
 
             <div className="text-center mt-6">
-              <p className="text-sm text-slate-500">
+              <p className={`text-sm ${isDarkMode ? 'text-neutral-500' : 'text-slate-500'}`}>
                 {isRegistering ? (
                   <>
                     Já tem uma conta?{' '}
-                    <button type="button" onClick={() => setIsRegistering(false)} className="font-semibold text-slate-900 hover:underline">
+                    <button type="button" onClick={() => setIsRegistering(false)} className={`font-semibold hover:underline ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                       Entrar
                     </button>
                   </>
                 ) : (
                   <>
                     Não tem uma conta?{' '}
-                    <button type="button" onClick={() => setIsRegistering(true)} className="font-semibold text-slate-900 hover:underline">
+                    <button type="button" onClick={() => setIsRegistering(true)} className={`font-semibold hover:underline ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                       Cadastre-se
                     </button>
                   </>
