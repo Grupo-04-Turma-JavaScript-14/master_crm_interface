@@ -108,7 +108,9 @@ export default function Intro() {
       const rows = Math.floor(canvas.height / spacing) + 2;
       
       // Hands dimensions
-      const imgTargetWidth = canvas.width * 1.2;
+      const isMobile = canvas.width < 768;
+      // On mobile, make hands relatively larger so they fill more of the portrait screen
+      const imgTargetWidth = isMobile ? Math.max(canvas.width * 2.5, 800) : canvas.width * 1.2;
       let scale = 1;
       let imgTargetHeight = canvas.height;
       if (imgData) {
@@ -119,7 +121,9 @@ export default function Intro() {
       const offsetY = (canvas.height - imgTargetHeight) / 2;
 
       // Logo dimensions
-      const logoWidth = Math.min(canvas.width * 0.4, 600); // restored original size
+      // On mobile, the logo should take up 85% of the screen width to be readable
+      const logoMaxWidth = isMobile ? canvas.width * 0.85 : canvas.width * 0.4;
+      const logoWidth = Math.min(logoMaxWidth, 600); 
       let logoScale = 1;
       let logoHeight = logoWidth;
       if (imgLogoData) {
@@ -127,7 +131,7 @@ export default function Intro() {
           logoHeight = imgLogoData.height * logoScale;
       }
       const logoOffsetX = (canvas.width - logoWidth) / 2;
-      const logoOffsetY = (canvas.height - logoHeight) / 2 - 40; // centered, slightly up
+      const logoOffsetY = (canvas.height - logoHeight) / 2 - (isMobile ? 80 : 40); // slightly higher on mobile
 
       // Intro Animation: Hands come together over 5 seconds
       const maxTime = 300;
@@ -153,9 +157,11 @@ export default function Intro() {
       const touchEase = Math.pow(touchProgressRef.current, 2); // accelerate touching
       
       // The hands naturally stop with a 40px gap (Creation of Adam style). When clicked, gap goes to 0.
-      const baseGap = 40;
+      const baseGap = isMobile ? 20 : 40; // smaller gap on mobile
       const currentGap = baseGap * (1 - touchEase);
-      const slideDistance = (400 * (1 - easeOut)) + currentGap;
+      // adjust slide distance for mobile scale
+      const maxSlide = isMobile ? 200 : 400;
+      const slideDistance = (maxSlide * (1 - easeOut)) + currentGap;
 
       // PASS 1: Draw Hands (Layer 1)
       for (let i = 0; i < cols; i++) {
@@ -257,9 +263,9 @@ export default function Intro() {
       />
       
       {/* Navbar restored */}
-      <header className="absolute top-0 left-0 w-full flex items-center justify-between p-6 z-20 animate-fade-in-down">
-        <div className="flex items-center gap-3">
-          <svg width="220" height="36" viewBox="0 0 220 36">
+      <header className="absolute top-0 left-0 w-full flex flex-col sm:flex-row items-center justify-between p-4 sm:p-6 z-20 animate-fade-in-down gap-4 sm:gap-0">
+        <div className="flex items-center justify-center w-full sm:w-auto">
+          <svg width="180" height="30" viewBox="0 0 220 36" className="sm:w-[220px] sm:h-[36px]">
             <defs>
               <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stopColor="#a855f7" />
@@ -273,33 +279,17 @@ export default function Intro() {
                 <rect width="100%" height="100%" fill="url(#dotMaskPattern)" />
               </mask>
             </defs>
-            <text x="0" y="28" fontSize="28" fontWeight="900" letterSpacing="2" fill="url(#textGrad)" mask="url(#dotsMask)">MASTER CRM</text>
+            <text x="110" y="28" fontSize="28" fontWeight="900" letterSpacing="2" fill="url(#textGrad)" mask="url(#dotsMask)" textAnchor="middle">MASTER CRM</text>
           </svg>
         </div>
         
         <button 
           onClick={handleAccess}
-          className="cursor-pointer text-sm font-bold text-black bg-white border-2 border-black px-8 py-2.5 rounded-full hover:bg-neutral-50 transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5"
+          className="cursor-pointer text-xs sm:text-sm font-bold text-black bg-white border-2 border-black px-6 sm:px-8 py-2 sm:py-2.5 rounded-full hover:bg-neutral-50 transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5 w-full sm:w-auto max-w-[200px]"
         >
           Acessar Agora
         </button>
       </header>
-      
-      {/* Button floating over canvas */}
-      <div className="absolute bottom-20 z-10 animate-fade-in-up">
-        <div className="relative group inline-block">
-          {/* Subtle Dark Glow Effect */}
-          <div className="absolute -inset-1 bg-neutral-300 rounded-full blur-md opacity-20 group-hover:opacity-40 transition duration-500 group-hover:duration-200"></div>
-          
-          <button
-            onClick={handleAccess}
-            className="cursor-pointer relative flex items-center gap-3 px-10 py-4 bg-white border-2 border-black hover:bg-neutral-50 text-black rounded-full font-bold text-lg hover:scale-105 transition-all duration-300 shadow-xl"
-          >
-            Acessar o Sistema
-            <ArrowRight className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
