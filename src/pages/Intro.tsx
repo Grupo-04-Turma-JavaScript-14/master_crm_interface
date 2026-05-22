@@ -134,9 +134,9 @@ export default function Intro() {
       const progress = Math.min(1, time / maxTime);
       const easeOut = 1 - Math.pow(1 - progress, 3);
       
-      // Click Animation: Close the final gap slowly
+      // Click Animation: Close the final gap quickly
       if (isNavigatingRef.current) {
-          touchProgressRef.current += 0.01; // Slower: takes ~1.6s to touch
+          touchProgressRef.current += 0.025; // Faster: takes ~660ms to touch
           if (touchProgressRef.current >= 1 && !hasTouchedRef.current) {
               touchProgressRef.current = 1;
               hasTouchedRef.current = true;
@@ -144,10 +144,10 @@ export default function Intro() {
               // Exactly when they touch, trigger the flash!
               setIsFlashActive(true);
               
-              // Wait for the flash to cover the screen, then navigate
+              // Wait for the flash to cover the screen, then navigate rapidly
               setTimeout(() => {
                  navigate('/login');
-              }, 800);
+              }, 400);
           }
       }
       const touchEase = Math.pow(touchProgressRef.current, 2); // accelerate touching
@@ -247,7 +247,7 @@ export default function Intro() {
       
       {/* Flash Screen Overlay triggered exactly when hands touch */}
       <div 
-        className={`absolute inset-0 bg-white z-50 pointer-events-none transition-opacity duration-700 ease-in ${isFlashActive ? 'opacity-100' : 'opacity-0'}`} 
+        className={`absolute inset-0 bg-white z-50 pointer-events-none transition-opacity duration-300 ease-in ${isFlashActive ? 'opacity-100' : 'opacity-0'}`} 
       />
 
       {/* Animated Background */}
@@ -277,15 +277,9 @@ export default function Intro() {
           </svg>
         </div>
         
-        <div className="hidden md:flex items-center gap-10 text-sm font-semibold text-neutral-500">
-          <span className="hover:text-black cursor-pointer transition-colors duration-300">Plataforma</span>
-          <span className="hover:text-black cursor-pointer transition-colors duration-300">Benefícios</span>
-          <span className="hover:text-black cursor-pointer transition-colors duration-300">Recursos</span>
-        </div>
-        
         <button 
           onClick={handleAccess}
-          className="text-sm font-medium text-white bg-black px-8 py-2.5 rounded-full hover:bg-neutral-800 transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5"
+          className="cursor-pointer text-sm font-bold text-black bg-white border-2 border-black px-8 py-2.5 rounded-full hover:bg-neutral-50 transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5"
         >
           Acessar Agora
         </button>
@@ -295,11 +289,11 @@ export default function Intro() {
       <div className="absolute bottom-20 z-10 animate-fade-in-up">
         <div className="relative group inline-block">
           {/* Subtle Dark Glow Effect */}
-          <div className="absolute -inset-1 bg-neutral-400 rounded-full blur-md opacity-20 group-hover:opacity-40 transition duration-500 group-hover:duration-200"></div>
+          <div className="absolute -inset-1 bg-neutral-300 rounded-full blur-md opacity-20 group-hover:opacity-40 transition duration-500 group-hover:duration-200"></div>
           
           <button
             onClick={handleAccess}
-            className="relative flex items-center gap-3 px-10 py-4 bg-black hover:bg-neutral-800 text-white rounded-full font-medium text-lg hover:scale-105 transition-all duration-300 shadow-xl"
+            className="cursor-pointer relative flex items-center gap-3 px-10 py-4 bg-white border-2 border-black hover:bg-neutral-50 text-black rounded-full font-bold text-lg hover:scale-105 transition-all duration-300 shadow-xl"
           >
             Acessar o Sistema
             <ArrowRight className="w-5 h-5" />
