@@ -1,9 +1,11 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Contact, UserCircle, LogOut } from 'lucide-react';
+import { useState } from 'react';
+import { LayoutDashboard, Users, Contact, UserCircle, LogOut, Search, Moon, Sun, Bell } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export default function CrmLayout() {
   const location = useLocation();
+  const [darkMode, setDarkMode] = useState(true);
 
   const navItems = [
     { name: 'Dashboard', path: '/app/dashboard', icon: LayoutDashboard },
@@ -13,32 +15,46 @@ export default function CrmLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-900 flex text-slate-100">
+    <div className={`min-h-screen flex transition-all duration-300 ${darkMode
+      ? 'bg-black text-white'
+      : 'bg-zinc-100 text-black'
+      }`}>
       {/* Sidebar */}
-      <aside className="w-64 glass-panel border-r border-slate-800 flex flex-col">
-        <div className="h-16 flex items-center px-6 border-b border-slate-800">
-          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+      <aside className={`w-72 flex flex-col border-r transition-all duration-300 ${darkMode
+        ? 'bg-zinc-950 border-zinc-800'
+        : 'bg-white border-zinc-200'
+        }`}>
+        <div className={`h-20 flex items-center px-8 border-b ${darkMode
+          ? 'border-zinc-800'
+          : 'border-zinc-200'
+          }`}>
+          {/* Logo */}
+          <h1 className="text-2xl font-bold tracking-wide">
             CRM Master
           </h1>
         </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-2">
+        <nav className="flex-1 px-5 py-8 space-y-3">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname.startsWith(item.path);
-            
+
             return (
               <Link
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  "flex items-center px-4 py-3 rounded-xl transition-all duration-200 group",
-                  isActive 
-                    ? "bg-blue-600/20 text-blue-400" 
-                    : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
+                  "flex items-center px-5 py-4 rounded-2xl transition-all duration-300 group font-medium",
+                  isActive
+                    ? darkMode
+                      ? "bg-white text-black shadow-lg"
+                      : "bg-black text-white shadow-lg"
+                    : darkMode
+                      ? "text-zinc-400 hover:bg-zinc-900 hover:text-white"
+                      : "text-zinc-500 hover:bg-zinc-100 hover:text-black"
                 )}
               >
-                <Icon className={cn("w-5 h-5 mr-3 transition-transform group-hover:scale-110", isActive && "text-blue-400")} />
+                <Icon className={cn("w-5 h-5 mr-4 transition-all duration-300 group-hover:scale-110")} />
                 <span className="font-medium">{item.name}</span>
               </Link>
             );
@@ -58,17 +74,69 @@ export default function CrmLayout() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-16 glass-panel border-b border-slate-800 flex items-center justify-between px-8">
-          <h2 className="text-lg font-semibold text-slate-200">
-            {navItems.find(i => location.pathname.includes(i.path))?.name || 'Dashboard'}
-          </h2>
-          <div className="flex items-center">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500" />
+        <header className={`h-20 px-8 flex items-center justify-between border-b transition-all duration-300 ${darkMode
+          ? 'bg-zinc-950 border-zinc-800'
+          : 'bg-white border-zinc-200'
+          }`}
+        >
+          <div className="relative w-96">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+
+            <input
+              type="text"
+              placeholder="Buscar..."
+              className={`w-full pl-11 pr-4 py-3 rounded-2xl border outline-none transition-all duration-300 ${darkMode
+                ? 'bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500'
+                : 'bg-zinc-100 border-zinc-200 text-black'
+                }`}
+            />
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className={`p-3 rounded-xl transition-all duration-300 ${darkMode
+                ? 'bg-zinc-900 hover:bg-zinc-800'
+                : 'bg-zinc-200 hover:bg-zinc-300'
+                }`}
+            >
+              {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+
+            <button
+              className={`p-3 rounded-xl transition-all duration-300 ${darkMode
+                ? 'bg-zinc-900 hover:bg-zinc-800'
+                : 'bg-zinc-200 hover:bg-zinc-300'
+                }`}
+            >
+              <Bell size={18} />
+            </button>
+
+            <div className="flex items-center gap-3">
+              <img
+                src="https://i.pravatar.cc/100"
+                alt="user"
+                className="w-11 h-11 rounded-full object-cover"
+              />
+
+              <div className="hidden md:flex flex-col">
+                <span className="text-sm font-semibold">
+                  Ariel
+                </span>
+
+                <span className="text-xs text-zinc-400">
+                  Admin
+                </span>
+              </div>
+            </div>
           </div>
         </header>
 
-        <div className="flex-1 overflow-auto p-8 relative">
-           <Outlet />
+        <div className={`flex-1 overflow-auto p-8 transition-all duration-300 ${darkMode
+            ? 'bg-black'
+            : 'bg-zinc-100'
+          }`}
+        >
+          <Outlet />
         </div>
       </main>
     </div>
