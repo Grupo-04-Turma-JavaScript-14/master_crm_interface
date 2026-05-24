@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react'; // 🌟 ArrowRight foi removido, dava erro de "never read"
 import { useEffect, useRef, useState } from 'react';
 
 export default function Intro() {
@@ -195,12 +195,15 @@ export default function Intro() {
 
           if (imgX >= 0 && imgX < img.width && imgY >= 0 && imgY < img.height) {
             const index = (imgY * img.width + imgX) * 4;
-            const r = imgData.data[index];
-            const g = imgData.data[index + 1];
-            const b = imgData.data[index + 2];
+            
+            // 🌟 Se comentaron r, g, b porque no se usan para el renderizado final (se usa handsColor)
+            // const r = imgData.data[index];
+            // const g = imgData.data[index + 1];
+            // const b = imgData.data[index + 2];
             const a = imgData.data[index + 3];
 
-            const brightness = (r + g + b) / 3;
+            // Calculate brightness using the raw data directly to avoid unused variable errors
+            const brightness = (imgData.data[index] + imgData.data[index + 1] + imgData.data[index + 2]) / 3;
             if (a > 128 && brightness < 240) {
               const slideOffset = isLeftHand ? -slideDistance : slideDistance;
               const drawX = x + slideOffset;
@@ -241,9 +244,6 @@ export default function Intro() {
             const ly = Math.floor((y - logoOffsetY) / logoScale);
             if (lx >= 0 && lx < imgLogoData.width && ly >= 0 && ly < imgLogoData.height) {
               const idx = (ly * imgLogoData.width + lx) * 4;
-              const r = imgLogoData.data[idx];
-              const g = imgLogoData.data[idx + 1];
-              const b = imgLogoData.data[idx + 2];
               const a = imgLogoData.data[idx + 3];
 
               // Draw if pixel is not transparent
@@ -290,7 +290,7 @@ export default function Intro() {
       {/* Navbar restored */}
       <header className="absolute top-0 left-0 w-full flex flex-col sm:flex-row items-center justify-between p-4 sm:p-6 z-20 animate-fade-in-down gap-4 sm:gap-0">
         <div className="flex items-center justify-center w-full sm:w-auto">
-          <svg viewBox="0 0 1402 1122" className={`h-[40px] sm:h-[50px] w-auto transition-all ${isDarkMode ? 'invert opacity-90' : 'opacity-100'}`}>
+          <svg viewBox="0 0 1402 1122" className={`h-10 sm:h-12.5 w-auto transition-all ${isDarkMode ? 'invert opacity-90' : 'opacity-100'}`}>
             <defs>
               <pattern id="navDotMaskPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
                 <circle cx="10" cy="10" r="8" fill="white" />
@@ -314,7 +314,7 @@ export default function Intro() {
 
           <button
             onClick={handleAccess}
-            className={`cursor-pointer text-xs sm:text-sm font-bold border-2 px-6 sm:px-8 py-2 sm:py-2.5 rounded-full transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5 w-full sm:w-auto max-w-[200px] ${isDarkMode ? 'bg-black border-neutral-700 text-white hover:bg-neutral-900 hover:border-neutral-500' : 'bg-white border-black text-black hover:bg-neutral-50'
+            className={`cursor-pointer text-xs sm:text-sm font-bold border-2 px-6 sm:px-8 py-2 sm:py-2.5 rounded-full transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5 w-full sm:w-auto max-w-50 ${isDarkMode ? 'bg-black border-neutral-700 text-white hover:bg-neutral-900 hover:border-neutral-500' : 'bg-white border-black text-black hover:bg-neutral-50'
               }`}
           >
             Acessar Agora
