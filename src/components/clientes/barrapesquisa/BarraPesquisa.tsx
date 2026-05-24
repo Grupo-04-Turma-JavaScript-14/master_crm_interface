@@ -6,10 +6,10 @@ interface BarraPesquisaProps {
 export default function BarraPesquisa({ pesquisa, setPesquisa }: BarraPesquisaProps) {
   return (
     <div className="w-full">
-      {/* A Borda Oficial e Fina aplicada diretamente no contêiner interno */}
-      <div className="flex items-center bg-transparent border border-slate-800/80 rounded-xl px-4 py-3 shadow-sm transition-all focus-within:border-blue-500/50">
+      {/* Container principal com efeito glass fino e cantos arredondados */}
+      <div className="flex items-center bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-xl px-4 py-3 shadow-sm transition-all focus-within:border-blue-500/50">
         
-        {/* Ícone da Lupa */}
+        {/* Ícone da Lupa perfeitamente alinhado */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="w-4 h-4 text-slate-500 mr-3 shrink-0"
@@ -25,10 +25,10 @@ export default function BarraPesquisa({ pesquisa, setPesquisa }: BarraPesquisaPr
           />
         </svg>
         
-        {/* Campo de texto livre */}
+        {/* Campo de input centralizado na vertical */}
         <input
           type="text"
-          placeholder="Pesquisar..."
+          placeholder="Pesquisar por nome do cliente ou empresa..."
           value={pesquisa}
           onChange={(e) => setPesquisa(e.target.value)}
           className="w-full bg-transparent outline-none text-white text-sm placeholder-slate-500 py-0.5 leading-none"
