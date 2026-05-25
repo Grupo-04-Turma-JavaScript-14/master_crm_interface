@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { api } from '../api/axios';
-import { Plus, X, Edit2, Trash2, Star, StarOff, Search } from 'lucide-react';
+import { Plus, X, Edit2, Trash2, Star, StarOff, Search, FileText, Mail, Phone, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TableSkeleton from '../components/TableSkeleton';
 import Avatar from '../components/Avatar';
@@ -13,6 +13,9 @@ export default function Clientes() {
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [viewingCliente, setViewingCliente] = useState<any>(null);
+  
   const [editingId, setEditingId] = useState<number | null>(null);
   const [nome, setNome] = useState('');
   const [empresa, setEmpresa] = useState('');
@@ -61,6 +64,11 @@ export default function Clientes() {
       console.error(err);
       toast.error('Erro ao buscar dados do cliente.');
     }
+  };
+
+  const openViewModal = (cliente: any) => {
+    setViewingCliente(cliente);
+    setIsViewModalOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -207,7 +215,11 @@ export default function Clientes() {
               </thead>
               <tbody className={isDarkMode ? 'text-neutral-300' : 'text-neutral-600'}>
                 {filteredData.map((item: any) => (
-                  <tr key={item.id} className={`border-b last:border-0 transition-colors ${isDarkMode ? 'border-neutral-800 hover:bg-neutral-900/50' : 'border-neutral-100 hover:bg-neutral-50'}`}>
+                  <tr 
+                    key={item.id} 
+                    onClick={() => openViewModal(item)}
+                    className={`border-b last:border-0 transition-colors cursor-pointer ${isDarkMode ? 'border-neutral-800 hover:bg-neutral-900/50' : 'border-neutral-100 hover:bg-neutral-50'}`}
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <Avatar name={item.nome} />
@@ -227,18 +239,18 @@ export default function Clientes() {
                     <td className="px-6 py-4">
                       <div className="flex justify-end gap-2">
                         {!item.statusOportunidade ? (
-                          <button onClick={() => handleMakeOpportunity(item.id)} className={`p-1.5 rounded-md transition-colors ${isDarkMode ? 'text-neutral-500 hover:text-white hover:bg-neutral-800' : 'text-neutral-400 hover:text-black hover:bg-neutral-200'}`} title="Tornar Oportunidade">
+                          <button onClick={(e) => { e.stopPropagation(); handleMakeOpportunity(item.id); }} className={`p-1.5 rounded-md transition-colors ${isDarkMode ? 'text-neutral-500 hover:text-white hover:bg-neutral-800' : 'text-neutral-400 hover:text-black hover:bg-neutral-200'}`} title="Tornar Oportunidade">
                             <Star className="w-4 h-4" />
                           </button>
                         ) : (
-                          <button onClick={() => handleRemoveOpportunity(item)} className={`p-1.5 rounded-md transition-colors ${isDarkMode ? 'text-neutral-500 hover:text-white hover:bg-neutral-800' : 'text-neutral-400 hover:text-black hover:bg-neutral-200'}`} title="Remover Oportunidade">
+                          <button onClick={(e) => { e.stopPropagation(); handleRemoveOpportunity(item); }} className={`p-1.5 rounded-md transition-colors ${isDarkMode ? 'text-neutral-500 hover:text-white hover:bg-neutral-800' : 'text-neutral-400 hover:text-black hover:bg-neutral-200'}`} title="Remover Oportunidade">
                             <StarOff className="w-4 h-4" />
                           </button>
                         )}
-                        <button onClick={() => openEditModal(item)} className={`p-1.5 rounded-md transition-colors ${isDarkMode ? 'text-neutral-500 hover:text-white hover:bg-neutral-800' : 'text-neutral-400 hover:text-black hover:bg-neutral-200'}`} title="Editar">
+                        <button onClick={(e) => { e.stopPropagation(); openEditModal(item); }} className={`p-1.5 rounded-md transition-colors ${isDarkMode ? 'text-neutral-500 hover:text-white hover:bg-neutral-800' : 'text-neutral-400 hover:text-black hover:bg-neutral-200'}`} title="Editar">
                           <Edit2 className="w-4 h-4" />
                         </button>
-                        <button onClick={() => handleDelete(item.id)} className={`p-1.5 rounded-md transition-colors ${isDarkMode ? 'text-neutral-500 hover:text-red-400 hover:bg-red-400/10' : 'text-neutral-400 hover:text-red-600 hover:bg-red-50'}`} title="Excluir">
+                        <button onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }} className={`p-1.5 rounded-md transition-colors ${isDarkMode ? 'text-neutral-500 hover:text-red-400 hover:bg-red-400/10' : 'text-neutral-400 hover:text-red-600 hover:bg-red-50'}`} title="Excluir">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -355,6 +367,106 @@ export default function Clientes() {
                 }`}
               >
                 {editingId ? 'Salvar Alterações' : 'Salvar Cliente'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* View Cliente Modal */}
+      {isViewModalOpen && viewingCliente && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onClick={() => setIsViewModalOpen(false)} />
+          
+          <div className={`relative w-full max-w-3xl flex flex-col transform transition-all animate-fade-in-up rounded-2xl overflow-hidden shadow-2xl max-h-[95vh] ${
+            isDarkMode ? 'bg-[#0a0a0a] border border-neutral-800' : 'bg-white border border-neutral-200'
+          }`}>
+            
+            {/* Header / Ribbon */}
+            <div className={`px-8 py-6 border-b flex justify-between items-center ${
+              isDarkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-200'
+            }`}>
+              <div className="flex items-center gap-4">
+                <div className={`p-2.5 rounded-xl border ${isDarkMode ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-200 text-black shadow-sm'}`}>
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className={`text-lg font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-black'}`}>Perfil do Cliente</h3>
+                  <p className={`text-xs uppercase tracking-widest font-bold mt-0.5 ${isDarkMode ? 'text-neutral-500' : 'text-neutral-400'}`}>ID: #{String(viewingCliente.id).padStart(5, '0')}</p>
+                </div>
+              </div>
+              <button onClick={() => setIsViewModalOpen(false)} className={`p-2 rounded-full transition-colors ${isDarkMode ? 'text-neutral-500 hover:text-white hover:bg-neutral-800' : 'text-neutral-400 hover:text-black hover:bg-neutral-100'}`}>
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Document Body */}
+            <div className="flex-1 overflow-y-auto p-8">
+              <div className={`max-w-prose mx-auto ${isDarkMode ? 'text-neutral-300' : 'text-neutral-700'}`}>
+                
+                {/* Visual Header */}
+                <div className="flex flex-col items-center mb-10 text-center">
+                  <div className="mb-4 transform scale-150">
+                    <Avatar name={viewingCliente.nome} />
+                  </div>
+                  <h2 className={`text-2xl font-bold mb-1 mt-2 ${isDarkMode ? 'text-white' : 'text-black'}`}>{viewingCliente.nome}</h2>
+                  <p className={`text-sm font-semibold mb-4 ${isDarkMode ? 'text-neutral-400' : 'text-neutral-500'}`}>{viewingCliente.empresa}</p>
+                  
+                  {viewingCliente.statusOportunidade ? (
+                    <span className={`px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold rounded-lg border bg-transparent ${isDarkMode ? 'border-neutral-500 text-white' : 'border-neutral-400 text-black'}`}>Oportunidade Ativa</span>
+                  ) : (
+                    <span className={`px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold rounded-lg border bg-transparent ${isDarkMode ? 'border-neutral-800 text-neutral-500' : 'border-neutral-200 text-neutral-400'}`}>Lead / Contato</span>
+                  )}
+                </div>
+
+                {/* Info Table */}
+                <div className={`grid grid-cols-1 sm:grid-cols-2 border-t border-l mb-10 text-sm rounded-lg overflow-hidden ${isDarkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
+                  <div className={`border-r border-b p-5 ${isDarkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
+                    <span className={`flex items-center gap-2 text-[10px] uppercase font-bold tracking-wider mb-2 ${isDarkMode ? 'text-neutral-500' : 'text-neutral-500'}`}>
+                      <Mail className="w-3 h-3" /> Endereço de Email
+                    </span>
+                    <div className={`font-medium text-[15px] ${isDarkMode ? 'text-neutral-300' : 'text-neutral-800'}`}>
+                      {viewingCliente.email || 'Nenhum email cadastrado'}
+                    </div>
+                  </div>
+                  <div className={`border-r border-b p-5 ${isDarkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
+                    <span className={`flex items-center gap-2 text-[10px] uppercase font-bold tracking-wider mb-2 ${isDarkMode ? 'text-neutral-500' : 'text-neutral-500'}`}>
+                      <Phone className="w-3 h-3" /> Telefone de Contato
+                    </span>
+                    <div className={`font-mono font-medium text-[15px] ${isDarkMode ? 'text-neutral-300' : 'text-neutral-800'}`}>
+                      {viewingCliente.telefone || 'Nenhum telefone cadastrado'}
+                    </div>
+                  </div>
+                  <div className={`col-span-1 sm:col-span-2 border-r border-b p-5 ${isDarkMode ? 'border-neutral-800 bg-neutral-900/30' : 'border-neutral-200 bg-neutral-50/50'}`}>
+                    <span className={`flex items-center gap-2 text-[10px] uppercase font-bold tracking-wider mb-2 ${isDarkMode ? 'text-neutral-500' : 'text-neutral-500'}`}>
+                      <Clock className="w-3 h-3" /> Data de Cadastro / Criação
+                    </span>
+                    <div className={`font-mono font-medium ${isDarkMode ? 'text-neutral-400' : 'text-neutral-600'}`}>
+                      {viewingCliente.createdAt ? new Date(viewingCliente.createdAt).toLocaleString('pt-BR', { dateStyle: 'full', timeStyle: 'medium' }) : 'Data não registrada no sistema'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional notes/info (Placeholder for future fields if needed) */}
+                <div className="mb-8">
+                  <h4 className={`text-xs font-bold uppercase tracking-widest mb-6 border-b pb-3 ${isDarkMode ? 'text-neutral-500 border-neutral-800' : 'text-neutral-400 border-neutral-200'}`}>Informações Adicionais</h4>
+                  <div className="prose prose-neutral max-w-none">
+                    <p className={`text-[15px] sm:text-base leading-relaxed italic ${isDarkMode ? 'text-neutral-500' : 'text-neutral-500'}`}>
+                      {viewingCliente.statusOportunidade 
+                        ? 'Este cliente está atualmente classificado como uma Oportunidade. Acompanhe ativamente o funil de vendas.' 
+                        : 'Este cliente está classificado como Lead. Converta-o para oportunidade assim que o contato for estabelecido com sucesso.'}
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className={`p-5 border-t flex justify-end ${isDarkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-200'}`}>
+              <button onClick={() => setIsViewModalOpen(false)} className={`px-5 py-2 text-sm font-medium rounded-lg transition-colors border shadow-sm ${
+                isDarkMode ? 'bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800' : 'bg-white border-neutral-200 text-black hover:bg-neutral-50'
+              }`}>
+                Fechar Perfil
               </button>
             </div>
           </div>
