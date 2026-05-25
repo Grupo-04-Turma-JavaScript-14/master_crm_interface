@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { api } from '../api/axios';
-import { Plus, X, Edit2, Trash2, Search, Calendar, User } from 'lucide-react';
+import { Plus, X, Edit2, Trash2, Search, Calendar, User, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TableSkeleton from '../components/TableSkeleton';
 import Avatar from '../components/Avatar';
@@ -20,6 +20,25 @@ export default function Contatos() {
   const [usuarioId, setUsuarioId] = useState('');
   const [clienteId, setClienteId] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [clienteSearchQuery, setClienteSearchQuery] = useState('');
+
+  const getLoggedUserId = () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        const payload = JSON.parse(jsonPayload);
+        return payload.sub?.toString();
+      }
+    } catch (e) {
+      console.error("Error parsing token", e);
+    }
+    return null;
+  };
 
   const fetchDados = async () => {
     setLoading(true);
@@ -36,7 +55,10 @@ export default function Contatos() {
       setUsuarios(resUsuarios.data);
       setClientes(clientesOportunidade);
       
-      if (resUsuarios.data.length > 0 && !usuarioId) setUsuarioId(resUsuarios.data[0].id.toString());
+      if (!usuarioId) {
+        const loggedId = getLoggedUserId();
+        setUsuarioId(loggedId || (resUsuarios.data.length > 0 ? resUsuarios.data[0].id.toString() : ''));
+      }
       if (clientesOportunidade.length > 0 && !clienteId) setClienteId(clientesOportunidade[0].id.toString());
     } catch (err) {
       console.error("API Error:", err);
@@ -53,8 +75,10 @@ export default function Contatos() {
   const openCreateModal = () => {
     setEditingId(null);
     setDescricao('');
-    if (usuarios.length > 0) setUsuarioId(usuarios[0].id.toString());
+    const loggedId = getLoggedUserId();
+    setUsuarioId(loggedId || (usuarios.length > 0 ? usuarios[0].id.toString() : ''));
     if (clientes.length > 0) setClienteId(clientes[0].id.toString());
+    setClienteSearchQuery('');
     setIsModalOpen(true);
   };
 
@@ -66,6 +90,7 @@ export default function Contatos() {
       setDescricao(data.descricao);
       setUsuarioId(data.usuario?.id?.toString() || '');
       setClienteId(data.cliente?.id?.toString() || '');
+      setClienteSearchQuery('');
       setIsModalOpen(true);
     } catch (err) {
       console.error(err);
@@ -117,6 +142,11 @@ export default function Contatos() {
     item.descricao.toLowerCase().includes(searchTerm.toLowerCase()) || 
     (item.cliente?.nome && item.cliente.nome.toLowerCase().includes(searchTerm.toLowerCase())) ||
     (item.usuario?.nome && item.usuario.nome.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  const filteredDropdownClientes = clientes.filter((c: any) => 
+    c.nome.toLowerCase().includes(clienteSearchQuery.toLowerCase()) || 
+    c.empresa.toLowerCase().includes(clienteSearchQuery.toLowerCase())
   );
 
   return (
@@ -224,15 +254,15 @@ export default function Contatos() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
             onClick={() => setIsModalOpen(false)}
           />
           
-          {/* Drawer Panel */}
-          <div className={`relative w-full max-w-md h-full shadow-2xl flex flex-col transform transition-transform duration-300 animate-slide-in-right ${isDarkMode ? 'bg-[#0a0a0a] border-l border-neutral-800' : 'bg-white border-l border-neutral-200'}`}>
+          {/* Modal Panel */}
+          <div className={`relative w-full max-w-xl shadow-2xl flex flex-col transform transition-all animate-fade-in-up rounded-2xl overflow-hidden max-h-[90vh] ${isDarkMode ? 'bg-[#0a0a0a] border border-neutral-800' : 'bg-white border border-neutral-200'}`}>
             
             {/* Header */}
             <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
@@ -262,39 +292,55 @@ export default function Contatos() {
                     rows={3}
                   />
                 </div>
-                <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isDarkMode ? 'text-neutral-500' : 'text-neutral-500'}`}>Usuário Responsável</label>
-                  <select 
-                    value={usuarioId} 
-                    onChange={e => setUsuarioId(e.target.value)} 
-                    required 
-                    className={`w-full rounded-lg px-4 py-2.5 text-sm transition-all outline-none border ${
-                      isDarkMode 
-                        ? 'bg-neutral-900 border-neutral-800 text-white focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500' 
-                        : 'bg-neutral-50 border-neutral-200 text-black focus:border-neutral-400 focus:ring-1 focus:ring-neutral-400'
-                    }`}
-                  >
-                    {usuarios.map((u: any) => (
-                      <option key={u.id} value={u.id}>{u.nome}</option>
-                    ))}
-                  </select>
-                </div>
+                {/* O usuário responsável é automaticamente o usuário logado e não precisa ser exibido */}
                 <div>
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isDarkMode ? 'text-neutral-500' : 'text-neutral-500'}`}>Oportunidade (Cliente)</label>
-                  <select 
-                    value={clienteId} 
-                    onChange={e => setClienteId(e.target.value)} 
-                    required 
-                    className={`w-full rounded-lg px-4 py-2.5 text-sm transition-all outline-none border ${
-                      isDarkMode 
-                        ? 'bg-neutral-900 border-neutral-800 text-white focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500' 
-                        : 'bg-neutral-50 border-neutral-200 text-black focus:border-neutral-400 focus:ring-1 focus:ring-neutral-400'
-                    }`}
-                  >
-                    {clientes.map((c: any) => (
-                      <option key={c.id} value={c.id}>{c.nome} ({c.empresa})</option>
-                    ))}
-                  </select>
+                  
+                  <div className={`w-full rounded-lg border overflow-hidden shadow-sm ${
+                    isDarkMode ? 'bg-[#171717] border-neutral-800' : 'bg-white border-neutral-200'
+                  }`}>
+                    <div className={`p-2 border-b ${isDarkMode ? 'border-neutral-800' : 'border-neutral-100'}`}>
+                      <div className="relative">
+                        <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 ${isDarkMode ? 'text-neutral-500' : 'text-neutral-400'}`} />
+                        <input
+                          type="text"
+                          placeholder="Pesquisar oportunidade..."
+                          value={clienteSearchQuery}
+                          onChange={(e) => setClienteSearchQuery(e.target.value)}
+                          className={`w-full rounded-md pl-9 pr-3 py-2 text-sm outline-none border transition-all ${
+                            isDarkMode 
+                              ? 'bg-black border-neutral-800 text-white focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600' 
+                              : 'bg-neutral-50 border-neutral-200 text-black focus:border-neutral-400 focus:ring-1 focus:ring-neutral-400'
+                          }`}
+                        />
+                      </div>
+                    </div>
+                    <ul className="h-64 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+                      {filteredDropdownClientes.length === 0 ? (
+                        <li className={`px-4 py-4 text-sm text-center ${isDarkMode ? 'text-neutral-500' : 'text-neutral-500'}`}>
+                          Nenhuma oportunidade encontrada.
+                        </li>
+                      ) : (
+                        filteredDropdownClientes.map((c: any) => (
+                          <li
+                            key={c.id}
+                            onClick={() => setClienteId(c.id.toString())}
+                            className={`px-4 py-2.5 text-sm cursor-pointer transition-colors flex items-center gap-3 ${
+                              clienteId === c.id.toString() 
+                                ? (isDarkMode ? 'bg-neutral-800 text-white font-bold' : 'bg-neutral-100 text-black font-bold') 
+                                : (isDarkMode ? 'hover:bg-neutral-800/60 text-neutral-300' : 'hover:bg-neutral-50 text-neutral-600')
+                            }`}
+                          >
+                            <Avatar name={c.nome} />
+                            <div className="flex flex-col">
+                              <span>{c.nome}</span>
+                              <span className={`text-[10px] uppercase font-bold tracking-wider ${isDarkMode ? 'text-neutral-500' : 'text-neutral-400'}`}>{c.empresa}</span>
+                            </div>
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </div>
                 </div>
               </form>
             </div>

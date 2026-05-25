@@ -153,15 +153,15 @@ export default function Usuarios() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
             onClick={() => setIsModalOpen(false)}
           />
           
-          {/* Drawer Panel */}
-          <div className={`relative w-full max-w-md h-full shadow-2xl flex flex-col transform transition-transform duration-300 animate-slide-in-right ${isDarkMode ? 'bg-[#0a0a0a] border-l border-neutral-800' : 'bg-white border-l border-neutral-200'}`}>
+          {/* Modal Panel */}
+          <div className={`relative w-full max-w-md shadow-2xl flex flex-col transform transition-all animate-fade-in-up rounded-2xl overflow-hidden max-h-[90vh] ${isDarkMode ? 'bg-[#0a0a0a] border border-neutral-800' : 'bg-white border border-neutral-200'}`}>
             
             {/* Header */}
             <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
