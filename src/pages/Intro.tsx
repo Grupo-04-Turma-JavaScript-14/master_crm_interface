@@ -292,8 +292,8 @@ export default function Intro() {
         <div className="flex items-center justify-center w-full sm:w-auto">
           <svg viewBox="0 0 1402 1122" className={`h-[40px] sm:h-[50px] w-auto transition-all ${isDarkMode ? 'invert opacity-90' : 'opacity-100'}`}>
             <defs>
-              <pattern id="navDotMaskPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                <circle cx="10" cy="10" r="8" fill="white" />
+              <pattern id="navDotMaskPattern" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+                <circle cx="30" cy="30" r="23" fill="white" />
               </pattern>
               <mask id="navDotsMask">
                 <rect width="100%" height="100%" fill="url(#navDotMaskPattern)" />
