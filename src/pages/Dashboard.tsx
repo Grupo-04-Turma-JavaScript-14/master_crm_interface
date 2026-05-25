@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Users, UserPlus, Activity, TrendingUp, Star } from 'lucide-react';
+import { Users, UserPlus, Activity, Star } from 'lucide-react';
 import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from 'recharts';
 import { api } from '../api/axios';
 
@@ -237,7 +237,7 @@ export default function Dashboard() {
                     fontSize: '12px',
                     fontWeight: 'bold'
                   }}
-                  formatter={(value: number) => [`${value} interações`, 'Total']}
+                  formatter={(value: any) => [`${value} interações`, 'Total']}
                   labelStyle={{ color: isDarkMode ? '#a3a3a3' : '#737373', marginBottom: '4px' }}
                 />
                 <Bar 

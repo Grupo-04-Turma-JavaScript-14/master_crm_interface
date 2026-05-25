@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Intro() {
@@ -241,9 +241,6 @@ export default function Intro() {
             const ly = Math.floor((y - logoOffsetY) / logoScale);
             if (lx >= 0 && lx < imgLogoData.width && ly >= 0 && ly < imgLogoData.height) {
               const idx = (ly * imgLogoData.width + lx) * 4;
-              const r = imgLogoData.data[idx];
-              const g = imgLogoData.data[idx + 1];
-              const b = imgLogoData.data[idx + 2];
               const a = imgLogoData.data[idx + 3];
 
               // Draw if pixel is not transparent

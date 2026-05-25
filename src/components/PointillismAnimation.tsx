@@ -70,8 +70,6 @@ export default function PointillismAnimation() {
     let animationFrameId: number;
     let currentWordIndex = 0;
     let timeoutId: ReturnType<typeof setTimeout>;
-    let isScattering = false;
-
     // Initialize particles around the center
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       particles.push(new Particle(width / 2 + (Math.random() - 0.5) * 100, height / 2 + (Math.random() - 0.5) * 100));
@@ -116,7 +114,6 @@ export default function PointillismAnimation() {
     };
 
     const scatterParticles = () => {
-      isScattering = true;
       particles.forEach((p) => {
         // Scatter them randomly within the screen bounds
         p.targetX = Math.random() * width;
@@ -126,7 +123,6 @@ export default function PointillismAnimation() {
       });
 
       timeoutId = setTimeout(() => {
-        isScattering = false;
         updateTargets();
       }, 1000); // 1 second of scattering before forming next word
     };

@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { api } from '../api/axios';
-import { Plus, X, Edit2, Trash2, Search, Calendar, User, ChevronDown, FileText, Building2, UserCircle2 } from 'lucide-react';
+import { Plus, X, Edit2, Trash2, Search, FileText, Building2, UserCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TableSkeleton from '../components/TableSkeleton';
 import Avatar from '../components/Avatar';
 
 export default function Contatos() {
   const { isDarkMode } = useOutletContext<{ isDarkMode: boolean }>();
-  const [data, setData] = useState([]);
-  const [usuarios, setUsuarios] = useState([]);
-  const [clientes, setClientes] = useState([]);
+  const [data, setData] = useState<any[]>([]);
+  const [usuarios, setUsuarios] = useState<any[]>([]);
+  const [clientes, setClientes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Modal state

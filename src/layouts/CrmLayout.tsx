@@ -68,7 +68,7 @@ export default function CrmLayout() {
             />
           ))}
           <div className="flex items-center justify-center relative z-10">
-            <SidebarLogo isDarkMode={isDarkMode} />
+            <SidebarLogo isDarkMode={isDarkMode} bgIndex={bgIndex} />
           </div>
           <button
             onClick={() => setIsMobileMenuOpen(false)}
