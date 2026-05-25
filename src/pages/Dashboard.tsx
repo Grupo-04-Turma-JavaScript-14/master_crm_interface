@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Users, UserPlus, Activity, TrendingUp, Star } from 'lucide-react';
+import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from 'recharts';
 import { api } from '../api/axios';
 
 export default function Dashboard() {
@@ -13,6 +14,7 @@ export default function Dashboard() {
     totalOportunidades: 0,
   });
   const [atividades, setAtividades] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<{label: string, value: number, height: number}[]>([]);
 
   useEffect(() => {
     const carregarDados = async () => {
@@ -34,12 +36,39 @@ export default function Dashboard() {
           totalOportunidades: clientes.filter((c: any) => c.statusOportunidade).length,
         });
 
-        // Ordenar contatos por data e pegar os 4 mais recentes
-        const recentes = contatos
+        const recentes = [...contatos]
           .sort((a: any, b: any) => new Date(b.dataContato).getTime() - new Date(a.dataContato).getTime())
           .slice(0, 4);
           
         setAtividades(recentes);
+
+        const hoje = new Date();
+        const ultimos7Dias = Array.from({length: 7}).map((_, i) => {
+          const d = new Date(hoje);
+          d.setDate(d.getDate() - (6 - i));
+          return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        });
+
+        const contatosPorDia: Record<string, number> = {};
+        ultimos7Dias.forEach(dia => contatosPorDia[dia] = 0);
+
+        contatos.forEach((c: any) => {
+          if (!c.dataContato) return;
+          const dia = new Date(c.dataContato).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+          if (contatosPorDia[dia] !== undefined) {
+            contatosPorDia[dia]++;
+          }
+        });
+
+        const maxContatos = Math.max(...Object.values(contatosPorDia), 1); 
+        
+        const dataGrafico = ultimos7Dias.map(dia => ({
+          label: dia,
+          value: contatosPorDia[dia],
+          height: Math.max((contatosPorDia[dia] / maxContatos) * 150, 4)
+        }));
+        
+        setChartData(dataGrafico);
       } catch (err) {
         console.error("Erro ao carregar dados do dashboard:", err);
       }
@@ -61,21 +90,21 @@ export default function Dashboard() {
   };
 
   const stats = [
-    { label: 'Total de Clientes', value: metricas.totalClientes.toString(), trend: '+12%', icon: Users, color: 'from-blue-500 to-cyan-400' },
-    { label: 'Total de Contatos', value: metricas.totalContatos.toString(), trend: '+5%', icon: UserPlus, color: 'from-purple-500 to-pink-500' },
-    { label: 'Usuários Ativos', value: metricas.totalUsuarios.toString(), trend: '+2%', icon: Activity, color: 'from-amber-400 to-orange-500' },
-    { label: 'Oportunidades', value: metricas.totalOportunidades.toString(), trend: '+18%', icon: Star, color: 'from-emerald-400 to-teal-500' }
+    { label: 'Total de Clientes', value: metricas.totalClientes.toString(), trend: '+12%', icon: Users },
+    { label: 'Total de Contatos', value: metricas.totalContatos.toString(), trend: '+5%', icon: UserPlus },
+    { label: 'Usuários Ativos', value: metricas.totalUsuarios.toString(), trend: '+2%', icon: Activity },
+    { label: 'Oportunidades', value: metricas.totalOportunidades.toString(), trend: '+18%', icon: Star }
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
+    <div className="space-y-10 animate-fade-in-up">
       {/* Header section */}
       <div>
-         <h1 className={`text-2xl md:text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-            Bem-vindo ao Master CRM
+         <h1 className={`text-2xl md:text-4xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-black'}`}>
+            Overview
          </h1>
-         <p className={`mt-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-            Aqui está o resumo das suas atividades e métricas importantes.
+         <p className={`mt-2 text-sm ${isDarkMode ? 'text-neutral-400' : 'text-neutral-500'}`}>
+            Acompanhamento de métricas e interações recentes.
          </p>
       </div>
 
@@ -86,24 +115,21 @@ export default function Dashboard() {
           return (
             <div 
               key={i} 
-              className={`relative overflow-hidden p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
+              className={`p-6 rounded-2xl border transition-all duration-300 hover:shadow-xl ${
                 isDarkMode 
-                  ? 'bg-slate-900/80 border-slate-800 shadow-lg' 
-                  : 'bg-white border-slate-100 shadow-md'
+                  ? 'bg-[#0a0a0a] border-neutral-800' 
+                  : 'bg-white border-neutral-200'
               }`}
             >
-              {/* Decorative gradient blob */}
-              <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-20 blur-2xl bg-gradient-to-br ${stat.color}`} />
-              
-              <div className="relative z-10 flex flex-col h-full justify-between">
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${stat.color} bg-opacity-10 text-white shadow-sm`}>
-                    <Icon className="w-6 h-6" />
+              <div className="flex flex-col h-full justify-between">
+                <div className="flex items-start justify-between mb-8">
+                  <div className={`p-2.5 rounded-lg border ${isDarkMode ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-200 text-black'}`}>
+                    <Icon className="w-5 h-5" />
                   </div>
-                  <span className={`flex items-center text-sm font-semibold px-2 py-1 rounded-full ${
+                  <span className={`flex items-center text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border ${
                     stat.trend.startsWith('+') 
-                      ? (isDarkMode ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-100 text-emerald-600') 
-                      : (isDarkMode ? 'bg-red-500/10 text-red-400' : 'bg-red-100 text-red-600')
+                      ? (isDarkMode ? 'bg-neutral-900 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700') 
+                      : (isDarkMode ? 'bg-neutral-900 border-neutral-700 text-neutral-400' : 'bg-neutral-100 border-neutral-300 text-neutral-500')
                   }`}>
                     {stat.trend.startsWith('+') ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingUp className="w-3 h-3 mr-1 rotate-180" />}
                     {stat.trend}
@@ -111,10 +137,10 @@ export default function Dashboard() {
                 </div>
                 
                 <div>
-                  <h3 className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                  <h3 className={`text-xs uppercase font-semibold tracking-wider mb-2 ${isDarkMode ? 'text-neutral-500' : 'text-neutral-400'}`}>
                     {stat.label}
                   </h3>
-                  <div className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
+                  <div className={`text-3xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-black'}`}>
                     {stat.value}
                   </div>
                 </div>
@@ -127,50 +153,80 @@ export default function Dashboard() {
       {/* Main Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Overview Chart */}
-        <div className={`lg:col-span-2 p-6 rounded-3xl border transition-colors duration-300 ${isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-100 shadow-md'}`}>
-          <div className="flex items-center justify-between mb-6">
-            <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>Visão Geral de Oportunidades</h3>
-            <select className={`text-sm rounded-lg px-3 py-1.5 border outline-none ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
-              <option>Últimos 7 dias</option>
-              <option>Este Mês</option>
-              <option>Este Ano</option>
+        <div className={`lg:col-span-2 p-6 rounded-3xl border transition-colors duration-300 ${isDarkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-200'}`}>
+          <div className="flex items-center justify-between mb-8">
+            <h3 className={`text-lg font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-black'}`}>Interações (7 Dias)</h3>
+            <select className={`text-xs uppercase font-bold tracking-wider rounded-lg px-3 py-1.5 border outline-none ${isDarkMode ? 'bg-black border-neutral-800 text-neutral-300' : 'bg-white border-neutral-200 text-neutral-600'}`}>
+              <option>Esta Semana</option>
             </select>
           </div>
-          <div className={`w-full h-72 rounded-2xl flex items-center justify-center border-2 border-dashed ${isDarkMode ? 'border-slate-700/50 bg-slate-800/20' : 'border-slate-200 bg-slate-50/50'}`}>
-            {/* Fake Chart graphic using CSS */}
-            <div className="flex items-end space-x-2 sm:space-x-4 h-48 w-full px-6 opacity-80">
-              {[40, 70, 45, 90, 65, 85, 120].map((height, idx) => (
-                <div key={idx} className="w-full relative group flex justify-center">
-                  <div 
-                    className="w-full rounded-t-lg bg-gradient-to-t from-purple-500/80 to-pink-500/80 transition-all duration-500 group-hover:from-purple-400 group-hover:to-pink-400" 
-                    style={{ height: `${height}px` }}
-                  />
-                  {/* Tooltip on hover */}
-                  <div className={`absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold px-2 py-1 rounded shadow-lg ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white text-slate-800'}`}>
-                    {height * 10}
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="w-full h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? '#262626' : '#e5e5e5'} />
+                <XAxis 
+                  dataKey="label" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: isDarkMode ? '#737373' : '#a3a3a3', fontWeight: 700 }}
+                  dy={10}
+                />
+                <YAxis 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: isDarkMode ? '#737373' : '#a3a3a3', fontWeight: 700 }}
+                />
+                <Tooltip 
+                  cursor={{ fill: isDarkMode ? '#171717' : '#f5f5f5' }}
+                  contentStyle={{ 
+                    backgroundColor: isDarkMode ? '#171717' : '#ffffff',
+                    border: `1px solid ${isDarkMode ? '#262626' : '#e5e5e5'}`,
+                    borderRadius: '8px',
+                    color: isDarkMode ? '#ffffff' : '#000000',
+                    fontSize: '12px',
+                    fontWeight: 'bold'
+                  }}
+                  formatter={(value: number) => [`${value} interações`, 'Total']}
+                  labelStyle={{ color: isDarkMode ? '#a3a3a3' : '#737373', marginBottom: '4px' }}
+                />
+                <Bar 
+                  dataKey="value" 
+                  fill={isDarkMode ? '#ffffff' : '#000000'} 
+                  radius={[4, 4, 0, 0]} 
+                  barSize={40}
+                  animationDuration={1500}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
         {/* Recent Activity */}
-        <div className={`p-6 rounded-3xl border transition-colors duration-300 ${isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-100 shadow-md'}`}>
-          <h3 className={`text-lg font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>Interações Recentes</h3>
-          <div className="space-y-6">
+        <div className={`p-6 rounded-3xl border transition-colors duration-300 ${isDarkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-200'}`}>
+          <h3 className={`text-lg font-bold tracking-tight mb-8 ${isDarkMode ? 'text-white' : 'text-black'}`}>Feed de Atividades</h3>
+          <div className="space-y-8 pl-2">
             {atividades.length === 0 ? (
-              <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Nenhuma atividade recente.</p>
+              <p className={`text-sm font-medium ${isDarkMode ? 'text-neutral-600' : 'text-neutral-400'}`}>Nenhuma atividade recente.</p>
             ) : atividades.map((act, idx) => (
-              <div key={idx} className="flex gap-4 relative">
+              <div key={idx} className="flex gap-5 relative">
                  {/* Timeline line */}
-                 {idx !== atividades.length - 1 && <div className={`absolute left-[11px] top-6 bottom-[-24px] w-0.5 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-200'}`} />}
+                 {idx !== atividades.length - 1 && <div className={`absolute left-[5px] top-6 bottom-[-32px] w-[2px] ${isDarkMode ? 'bg-neutral-800' : 'bg-neutral-200'}`} />}
                  
-                 <div className={`w-6 h-6 rounded-full flex-shrink-0 z-10 ring-4 bg-blue-500 ${isDarkMode ? 'ring-slate-900' : 'ring-white'}`} />
+                 <div className={`w-3 h-3 mt-1.5 rounded-full flex-shrink-0 z-10 ${isDarkMode ? 'bg-neutral-300 outline outline-4 outline-[#0a0a0a]' : 'bg-neutral-800 outline outline-4 outline-white'}`} />
+                 
                  <div>
-                   <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-slate-200' : 'text-slate-700'}`}>Contato: {act.cliente?.nome || 'Desconhecido'}</h4>
-                   <p className={`text-xs mt-0.5 max-w-[200px] sm:max-w-xs truncate ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>{act.descricao}</p>
-                   <span className={`text-[10px] font-medium block mt-1 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>{formatTimeAgo(act.dataContato)} por {act.usuario?.nome}</span>
+                   <div className="flex items-center gap-2 mb-1">
+                     <h4 className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-black'}`}>{act.cliente?.nome || 'Desconhecido'}</h4>
+                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${isDarkMode ? 'bg-neutral-900 border-neutral-800 text-neutral-400' : 'bg-neutral-100 border-neutral-200 text-neutral-500'}`}>
+                       {formatTimeAgo(act.dataContato)}
+                     </span>
+                   </div>
+                   <p className={`text-xs leading-relaxed max-w-[200px] sm:max-w-xs ${isDarkMode ? 'text-neutral-400' : 'text-neutral-500'}`}>
+                     {act.descricao}
+                   </p>
+                   <p className={`text-[10px] font-semibold mt-2 uppercase tracking-wide ${isDarkMode ? 'text-neutral-600' : 'text-neutral-400'}`}>
+                     Resp: {act.usuario?.nome}
+                   </p>
                  </div>
               </div>
             ))}

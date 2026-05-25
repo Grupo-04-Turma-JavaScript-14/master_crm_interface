@@ -24,21 +24,21 @@ export default function CrmLayout() {
   ];
 
   return (
-    <div className={`min-h-screen flex transition-colors duration-500 ${isDarkMode ? 'bg-[#050505] text-slate-100' : 'bg-[#fafafa] text-slate-800'}`}>
+    <div className={`min-h-screen flex transition-colors duration-500 ${isDarkMode ? 'bg-[#0a0a0a] text-white' : 'bg-[#fafafa] text-black'}`}>
       {/* Sidebar */}
-      <aside className={`w-64 border-r flex flex-col transition-colors duration-500 ${isDarkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white/80 border-slate-200 backdrop-blur-md shadow-lg'}`}>
-        <div className={`h-16 flex items-center px-6 border-b ${isDarkMode ? 'border-slate-800' : 'border-slate-200'}`}>
-          <div className="flex items-center gap-2">
-            <svg viewBox="0 0 1402 1122" className={`h-8 w-auto transition-all ${isDarkMode ? 'invert opacity-90' : 'opacity-100'}`}>
+      <aside className={`w-64 border-r flex flex-col transition-colors duration-500 ${isDarkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-200 shadow-xl shadow-neutral-200/50'}`}>
+        <div className={`h-20 flex items-center px-8 border-b ${isDarkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
+          <div className="flex items-center gap-3">
+            <svg viewBox="0 0 1402 1122" className={`h-8 w-auto transition-all ${isDarkMode ? 'invert opacity-100' : 'opacity-100'}`}>
               <image href="/logo_master.svg" width="1402" height="1122" />
             </svg>
-            <h1 className={`text-lg font-bold bg-gradient-to-r ${isDarkMode ? 'from-purple-400 via-pink-400 to-yellow-400' : 'from-purple-600 via-pink-600 to-yellow-600'} bg-clip-text text-transparent`}>
+            <h1 className={`text-xl font-black tracking-tighter ${isDarkMode ? 'text-white' : 'text-black'}`}>
               MASTER CRM
             </h1>
           </div>
         </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-2">
+        <nav className="flex-1 px-4 py-8 space-y-2">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname.startsWith(item.path);
@@ -48,49 +48,51 @@ export default function CrmLayout() {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  "flex items-center px-4 py-3 rounded-xl transition-all duration-200 group",
+                  "flex items-center px-4 py-3 rounded-lg transition-all duration-300 group",
                   isActive 
-                    ? (isDarkMode ? "bg-purple-600/20 text-purple-400" : "bg-purple-600/10 text-purple-600")
-                    : (isDarkMode ? "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200" : "text-slate-500 hover:bg-slate-100 hover:text-slate-800")
+                    ? (isDarkMode ? "bg-white text-black" : "bg-black text-white")
+                    : (isDarkMode ? "text-neutral-500 hover:bg-neutral-900 hover:text-white" : "text-neutral-500 hover:bg-neutral-100 hover:text-black")
                 )}
               >
-                <Icon className={cn("w-5 h-5 mr-3 transition-transform group-hover:scale-110", isActive && (isDarkMode ? "text-purple-400" : "text-purple-600"))} />
-                <span className="font-medium">{item.name}</span>
+                <Icon className={cn("w-5 h-5 mr-3 transition-transform duration-300 group-hover:scale-110", isActive ? "" : "")} />
+                <span className="font-semibold text-sm tracking-wide">{item.name}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className={`p-4 border-t ${isDarkMode ? 'border-slate-800' : 'border-slate-200'}`}>
+        <div className={`p-6 border-t ${isDarkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
           <Link
             to="/login"
-            className={`flex items-center px-4 py-3 rounded-xl transition-colors ${isDarkMode ? 'text-slate-400 hover:text-red-400 hover:bg-red-400/10' : 'text-slate-500 hover:text-red-600 hover:bg-red-50'}`}
+            className={`flex items-center px-4 py-3 rounded-lg transition-colors duration-300 ${isDarkMode ? 'text-neutral-500 hover:text-white hover:bg-neutral-900' : 'text-neutral-500 hover:text-black hover:bg-neutral-100'}`}
           >
             <LogOut className="w-5 h-5 mr-3" />
-            <span className="font-medium">Sair</span>
+            <span className="font-semibold text-sm tracking-wide">Sair da Conta</span>
           </Link>
         </div>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        <header className={`h-16 border-b flex items-center justify-between px-8 transition-colors duration-500 ${isDarkMode ? 'bg-slate-900/50 border-slate-800 backdrop-blur-md' : 'bg-white/80 border-slate-200 backdrop-blur-md shadow-sm'}`}>
-          <h2 className={`text-lg font-semibold ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>
+        <header className={`h-20 border-b flex items-center justify-between px-10 transition-colors duration-500 ${isDarkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-200 shadow-sm'}`}>
+          <h2 className={`text-xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-black'}`}>
             {navItems.find(i => location.pathname.includes(i.path))?.name || 'Dashboard'}
           </h2>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
              <button
                 onClick={toggleTheme}
                 className={`p-2 rounded-full border-2 transition-all cursor-pointer ${isDarkMode ? 'border-neutral-800 text-white hover:bg-neutral-800 hover:border-neutral-600' : 'border-neutral-200 text-black hover:bg-neutral-100 hover:border-black'}`}
                 title="Alternar Tema"
               >
-                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-purple-500 via-pink-500 to-yellow-500 shadow-lg border-2 border-transparent" />
+            <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${isDarkMode ? 'border-neutral-700 bg-neutral-900' : 'border-neutral-200 bg-neutral-100'}`}>
+              <UserCircle className={`w-6 h-6 ${isDarkMode ? 'text-neutral-500' : 'text-neutral-400'}`} />
+            </div>
           </div>
         </header>
 
-        <div className="flex-1 overflow-auto p-8 relative">
+        <div className="flex-1 overflow-auto p-10 relative">
            <Outlet context={{ isDarkMode }} />
         </div>
       </main>
