@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Moon, Sun } from 'lucide-react';
+import toast from 'react-hot-toast';
 import PointillismAnimation from '../components/PointillismAnimation';
+import { api } from '../api/axios';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -24,20 +26,32 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('token', 'fake-jwt-token');
-    navigate('/app/dashboard');
+    try {
+      const response = await api.post('/usuarios/logar', { usuario: email, senha });
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        navigate('/app/dashboard');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error('Erro ao fazer login. Verifique suas credenciais.');
+    }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Do not login automatically. Just switch back to login mode.
-    alert('Cadastro realizado com sucesso! Faça login para continuar.');
-    setIsRegistering(false);
-    // clear fields except email so they can log in quickly
-    setNome('');
-    setSenha('');
+    try {
+      await api.post('/usuarios/cadastrar', { nome, email, senha });
+      toast.success('Cadastro realizado com sucesso! Faça login para continuar.');
+      setIsRegistering(false);
+      setNome('');
+      setSenha('');
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast.error('Erro ao cadastrar usuário.');
+    }
   };
 
   return (

@@ -211,11 +211,11 @@ export default function Intro() {
 
               // Suaviza as bordas externas para não haver corte abrupto quando as mãos deslizam
               let edgeFade = 1;
-              const edgeThreshold = isMobile ? 150 : 350; 
+              const edgeThreshold = isMobile ? 150 : 350;
               if (x < edgeThreshold) {
-                  edgeFade = Math.max(0, x / edgeThreshold);
+                edgeFade = Math.max(0, x / edgeThreshold);
               } else if (x > canvas.width - edgeThreshold) {
-                  edgeFade = Math.max(0, (canvas.width - x) / edgeThreshold);
+                edgeFade = Math.max(0, (canvas.width - x) / edgeThreshold);
               }
 
               const fadeAlpha = Math.min(1, time / 60) * edgeFade;
@@ -326,7 +326,7 @@ export default function Intro() {
       <footer className="absolute bottom-6 left-0 w-full z-20 flex justify-center items-center px-4 animate-fade-in-up" style={{ animationDelay: '800ms' }}>
         <p className={`text-xs sm:text-sm font-medium text-center tracking-wide px-4 py-1 rounded-full backdrop-blur-sm transition-colors duration-1000 ${isDarkMode ? 'bg-black/50 text-neutral-500' : 'bg-[#fafafa]/80 text-neutral-400'
           }`}>
-          Desenvolvido por: <span className={isDarkMode ? 'text-neutral-300' : 'text-neutral-600'}>João Henrique, Mariana, Marlos, Mirelly, Samara & Henrique</span>
+          Desenvolvido por: <span className={isDarkMode ? 'text-neutral-300' : 'text-neutral-600'}>João Henrique, Mariana, Marlos, Mirelly, Samara, Henrique & Javier</span>
         </p>
       </footer>
     </div>

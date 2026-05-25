@@ -6,10 +6,12 @@ import Dashboard from './pages/Dashboard';
 import Clientes from './pages/Clientes';
 import Contatos from './pages/Contatos';
 import Usuarios from './pages/Usuarios';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Intro />} />
