@@ -4,6 +4,54 @@ import { Users, UserPlus, Activity, TrendingUp, Star } from 'lucide-react';
 import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from 'recharts';
 import { api } from '../api/axios';
 
+// Componente para animar os números
+const AnimatedNumber = ({ value }: { value: number }) => {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const end = value;
+    if (start === end) return;
+    
+    const duration = 1000; // 1 segundo
+    const incrementTime = 20;
+    const step = Math.ceil(end / (duration / incrementTime));
+    
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= end) {
+        setDisplayValue(end);
+        clearInterval(timer);
+      } else {
+        setDisplayValue(start);
+      }
+    }, incrementTime);
+    
+    return () => clearInterval(timer);
+  }, [value]);
+
+  return <>{displayValue}</>;
+};
+
+// Mini gráfico de linha (Sparkline) para o card
+const Sparkline = ({ isDarkMode, colorClass }: { isDarkMode: boolean, colorClass: string }) => (
+  <svg className="w-full h-12 mt-2 -ml-2" viewBox="0 0 100 30" preserveAspectRatio="none">
+    <path 
+      d="M0,25 C10,20 20,28 30,15 C40,2 50,18 60,10 C70,2 80,22 90,5 L100,20" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2"
+      className={colorClass}
+      vectorEffect="non-scaling-stroke"
+    />
+    <path 
+      d="M0,25 C10,20 20,28 30,15 C40,2 50,18 60,10 C70,2 80,22 90,5 L100,20 L100,30 L0,30 Z" 
+      fill="currentColor" 
+      className={`${colorClass} opacity-10`}
+    />
+  </svg>
+);
+
 export default function Dashboard() {
   const { isDarkMode } = useOutletContext<{ isDarkMode: boolean }>();
 
@@ -90,10 +138,10 @@ export default function Dashboard() {
   };
 
   const stats = [
-    { label: 'Total de Clientes', value: metricas.totalClientes.toString(), trend: '+12%', icon: Users },
-    { label: 'Total de Contatos', value: metricas.totalContatos.toString(), trend: '+5%', icon: UserPlus },
-    { label: 'Usuários Ativos', value: metricas.totalUsuarios.toString(), trend: '+2%', icon: Activity },
-    { label: 'Oportunidades', value: metricas.totalOportunidades.toString(), trend: '+18%', icon: Star }
+    { label: 'Total de Clientes', value: metricas.totalClientes.toString(), icon: Users },
+    { label: 'Total de Contatos', value: metricas.totalContatos.toString(), icon: UserPlus },
+    { label: 'Usuários Ativos', value: metricas.totalUsuarios.toString(), icon: Activity },
+    { label: 'Oportunidades', value: metricas.totalOportunidades.toString(), icon: Star }
   ];
 
   return (
@@ -115,35 +163,34 @@ export default function Dashboard() {
           return (
             <div 
               key={i} 
-              className={`p-6 rounded-2xl border transition-all duration-300 hover:shadow-xl ${
+              className={`relative overflow-hidden p-6 rounded-2xl border transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl group ${
                 isDarkMode 
-                  ? 'bg-[#0a0a0a] border-neutral-800' 
-                  : 'bg-white border-neutral-200'
+                  ? 'bg-black border-neutral-800 hover:border-neutral-600' 
+                  : 'bg-white border-neutral-200 hover:border-neutral-400'
               }`}
             >
-              <div className="flex flex-col h-full justify-between">
-                <div className="flex items-start justify-between mb-8">
-                  <div className={`p-2.5 rounded-lg border ${isDarkMode ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-200 text-black'}`}>
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  <span className={`flex items-center text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border ${
-                    stat.trend.startsWith('+') 
-                      ? (isDarkMode ? 'bg-neutral-900 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700') 
-                      : (isDarkMode ? 'bg-neutral-900 border-neutral-700 text-neutral-400' : 'bg-neutral-100 border-neutral-300 text-neutral-500')
-                  }`}>
-                    {stat.trend.startsWith('+') ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingUp className="w-3 h-3 mr-1 rotate-180" />}
-                    {stat.trend}
-                  </span>
-                </div>
-                
-                <div>
-                  <h3 className={`text-xs uppercase font-semibold tracking-wider mb-2 ${isDarkMode ? 'text-neutral-500' : 'text-neutral-400'}`}>
+              {/* Efeito de brilho de fundo no hover */}
+              <div className={`absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 rounded-full blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500 ${isDarkMode ? 'bg-white' : 'bg-black'}`} />
+
+              <div className="flex flex-col h-full justify-between relative z-10">
+                <div className="flex items-center justify-between">
+                  <h3 className={`text-xs uppercase font-bold tracking-widest ${isDarkMode ? 'text-neutral-400' : 'text-neutral-500'}`}>
                     {stat.label}
                   </h3>
-                  <div className={`text-3xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-black'}`}>
-                    {stat.value}
+                  <div className={`p-2.5 rounded-xl border shadow-sm transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 ${isDarkMode ? 'bg-black border-neutral-700 text-neutral-300' : 'bg-white border-neutral-200 text-neutral-600'}`}>
+                    <Icon className="w-4 h-4" />
                   </div>
                 </div>
+                
+                <div className="mt-4">
+                  <div className={`text-4xl font-black tracking-tighter ${isDarkMode ? 'text-white' : 'text-black'}`}>
+                    <AnimatedNumber value={Number(stat.value)} />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="absolute bottom-0 left-0 right-0">
+                <Sparkline isDarkMode={isDarkMode} colorClass={isDarkMode ? 'text-neutral-600' : 'text-neutral-300'} />
               </div>
             </div>
           );

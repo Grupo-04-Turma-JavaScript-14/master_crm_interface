@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Contact, UserCircle, LogOut, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, Users, Contact, UserCircle, LogOut, Sun, Moon, Menu, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useState, useEffect } from 'react';
 
@@ -9,10 +9,16 @@ export default function CrmLayout() {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem('master_crm_theme') !== 'light';
   });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('master_crm_theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
@@ -25,9 +31,18 @@ export default function CrmLayout() {
 
   return (
     <div className={`min-h-screen flex transition-colors duration-500 ${isDarkMode ? 'bg-[#0a0a0a] text-white' : 'bg-[#fafafa] text-black'}`}>
+      
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm transition-opacity"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className={`w-64 border-r flex flex-col transition-colors duration-500 ${isDarkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-200 shadow-xl shadow-neutral-200/50'}`}>
-        <div className={`h-20 flex items-center px-8 border-b ${isDarkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 border-r flex flex-col transform transition-transform duration-300 md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} ${isDarkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-200 shadow-xl shadow-neutral-200/50'}`}>
+        <div className={`h-20 flex items-center justify-between px-6 md:px-8 border-b ${isDarkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
           <div className="flex items-center gap-3">
             <svg viewBox="0 0 1402 1122" className={`h-8 w-auto transition-all ${isDarkMode ? 'invert opacity-100' : 'opacity-100'}`}>
               <image href="/logo_master.svg" width="1402" height="1122" />
@@ -36,6 +51,12 @@ export default function CrmLayout() {
               MASTER CRM
             </h1>
           </div>
+          <button 
+            onClick={() => setIsMobileMenuOpen(false)}
+            className={`md:hidden p-2 -mr-2 rounded-lg transition-colors ${isDarkMode ? 'text-neutral-400 hover:bg-neutral-800 hover:text-white' : 'text-neutral-500 hover:bg-neutral-100 hover:text-black'}`}
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         <nav className="flex-1 px-4 py-8 space-y-2">
@@ -73,12 +94,20 @@ export default function CrmLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <header className={`h-20 border-b flex items-center justify-between px-10 transition-colors duration-500 ${isDarkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-200 shadow-sm'}`}>
-          <h2 className={`text-xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-black'}`}>
-            {navItems.find(i => location.pathname.includes(i.path))?.name || 'Dashboard'}
-          </h2>
-          <div className="flex items-center gap-6">
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <header className={`h-20 border-b flex items-center justify-between px-4 md:px-10 transition-colors duration-500 ${isDarkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-200 shadow-sm'}`}>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className={`md:hidden p-2 -ml-2 rounded-lg transition-colors ${isDarkMode ? 'text-neutral-400 hover:bg-neutral-800 hover:text-white' : 'text-neutral-500 hover:bg-neutral-100 hover:text-black'}`}
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h2 className={`text-xl font-bold tracking-tight truncate ${isDarkMode ? 'text-white' : 'text-black'}`}>
+              {navItems.find(i => location.pathname.includes(i.path))?.name || 'Dashboard'}
+            </h2>
+          </div>
+          <div className="flex items-center gap-4 md:gap-6">
              <button
                 onClick={toggleTheme}
                 className={`p-2 rounded-full border-2 transition-all cursor-pointer ${isDarkMode ? 'border-neutral-800 text-white hover:bg-neutral-800 hover:border-neutral-600' : 'border-neutral-200 text-black hover:bg-neutral-100 hover:border-black'}`}
@@ -92,7 +121,7 @@ export default function CrmLayout() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-auto p-10 relative">
+        <div className="flex-1 overflow-auto p-4 md:p-10 relative">
            <Outlet context={{ isDarkMode }} />
         </div>
       </main>
