@@ -33,24 +33,21 @@ const AnimatedNumber = ({ value }: { value: number }) => {
   return <>{displayValue}</>;
 };
 
-// Mini gráfico de linha (Sparkline) para o card
-const Sparkline = ({ isDarkMode, colorClass }: { isDarkMode: boolean, colorClass: string }) => (
-  <svg className="w-full h-12 mt-2 -ml-2" viewBox="0 0 100 30" preserveAspectRatio="none">
-    <path 
-      d="M0,25 C10,20 20,28 30,15 C40,2 50,18 60,10 C70,2 80,22 90,5 L100,20" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2"
-      className={colorClass}
-      vectorEffect="non-scaling-stroke"
-    />
-    <path 
-      d="M0,25 C10,20 20,28 30,15 C40,2 50,18 60,10 C70,2 80,22 90,5 L100,20 L100,30 L0,30 Z" 
-      fill="currentColor" 
-      className={`${colorClass} opacity-10`}
-    />
-  </svg>
-);
+// Barra de progresso proporcional ao valor real
+const MetricBar = ({ value, maxValue, isDarkMode }: { value: number; maxValue: number; isDarkMode: boolean }) => {
+  const percentage = maxValue > 0 ? Math.max((value / maxValue) * 100, 8) : 8;
+  return (
+    <div className="w-full mt-3">
+      <div className={`w-full h-1.5 rounded-full overflow-hidden ${isDarkMode ? 'bg-neutral-800' : 'bg-neutral-100'}`}>
+        <div
+          className={`h-full rounded-full transition-all duration-1000 ease-out ${isDarkMode ? 'bg-neutral-400' : 'bg-neutral-500'}`}
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+    </div>
+  );
+};
+
 
 export default function Dashboard() {
   const { isDarkMode } = useOutletContext<{ isDarkMode: boolean }>();
@@ -138,11 +135,19 @@ export default function Dashboard() {
     return `Há ${dias} dia${dias > 1 ? 's' : ''}`;
   };
 
+  const maxMetric = Math.max(
+    metricas.totalClientes,
+    metricas.totalContatos,
+    metricas.totalUsuarios,
+    metricas.totalOportunidades,
+    1
+  );
+
   const stats = [
-    { label: 'Total de Clientes', value: metricas.totalClientes.toString(), icon: Users },
-    { label: 'Total de Contatos', value: metricas.totalContatos.toString(), icon: UserPlus },
-    { label: 'Usuários Ativos', value: metricas.totalUsuarios.toString(), icon: Activity },
-    { label: 'Oportunidades', value: metricas.totalOportunidades.toString(), icon: Star }
+    { label: 'Total de Clientes', value: metricas.totalClientes, icon: Users },
+    { label: 'Total de Contatos', value: metricas.totalContatos, icon: UserPlus },
+    { label: 'Usuários Ativos', value: metricas.totalUsuarios, icon: Activity },
+    { label: 'Oportunidades', value: metricas.totalOportunidades, icon: Star }
   ];
 
   return (
@@ -185,14 +190,12 @@ export default function Dashboard() {
                 
                 <div className="mt-4">
                   <div className={`text-4xl font-black tracking-tighter ${isDarkMode ? 'text-white' : 'text-black'}`}>
-                    <AnimatedNumber value={Number(stat.value)} />
+                    <AnimatedNumber value={stat.value} />
                   </div>
+                  <MetricBar value={stat.value} maxValue={maxMetric} isDarkMode={isDarkMode} />
                 </div>
               </div>
-              
-              <div className="absolute bottom-0 left-0 right-0">
-                <Sparkline isDarkMode={isDarkMode} colorClass={isDarkMode ? 'text-neutral-600' : 'text-neutral-300'} />
-              </div>
+
             </div>
           );
         })}

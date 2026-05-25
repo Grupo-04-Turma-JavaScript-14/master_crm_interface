@@ -42,18 +42,21 @@ export default function CrmLayout() {
 
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 border-r flex flex-col transform transition-transform duration-300 md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} ${isDarkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-200 shadow-xl shadow-neutral-200/50'}`}>
-        <div className={`h-20 flex items-center justify-between px-6 md:px-8 border-b ${isDarkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
-          <div className="flex items-center gap-3">
-            <svg viewBox="0 0 1402 1122" className={`h-8 w-auto transition-all ${isDarkMode ? 'invert opacity-100' : 'opacity-100'}`}>
-              <image href="/logo_master.svg" width="1402" height="1122" />
+        <div className={`h-20 flex items-center justify-center px-6 md:px-8 border-b relative ${isDarkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
+          <div className="flex items-center justify-center">
+            <svg 
+              viewBox="390 120 660 610" 
+              className={`h-10 w-auto transition-transform duration-300 hover:scale-110 cursor-pointer ${isDarkMode ? 'text-white' : 'text-black'}`}
+            >
+              <g transform="translate(0.000000,1122.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">
+                <path d="M10025 9619 c-635 -511 -1475 -1196 -2041 -1664 -66 -55 -183 -152 -260 -215 -76 -63 -297 -245 -490 -406 l-350 -291 -59 91 c-32 50 -317 479 -632 953 -600 903 -596 898 -690 934 -15 6 -309 73 -652 150 -590 132 -628 139 -675 129 -64 -14 -124 -49 -154 -89 -55 -75 -52 89 -52 -2570 0 -1701 3 -2468 11 -2494 14 -50 73 -115 127 -139 24 -11 67 -20 96 -20 53 -1 59 1 1454 476 160 54 210 83 238 138 21 41 21 118 -1 155 -9 15 -141 118 -292 228 -223 162 -279 208 -301 245 l-27 45 -3 1018 c-2 703 1 1031 8 1058 12 43 44 83 63 76 11 -3 147 -187 580 -782 100 -137 223 -295 272 -350 103 -114 290 -328 484 -555 73 -85 141 -158 152 -162 33 -13 66 9 123 79 119 147 864 1063 930 1144 693 848 1237 1506 1606 1944 69 83 273 326 452 540 180 215 370 441 423 503 68 80 95 119 93 134 -2 12 -7 23 -13 24 -5 2 -194 -146 -420 -327z"/>
+                <path d="M9768 8379 c-17 -6 -120 -125 -280 -322 -315 -388 -720 -885 -1025 -1254 -128 -156 -233 -287 -233 -292 0 -5 16 -15 35 -21 24 -8 45 -26 63 -53 l27 -41 5 -875 5 -876 25 -44 c14 -24 41 -57 60 -73 23 -18 271 -123 670 -283 574 -231 640 -255 693 -255 98 0 178 52 215 140 12 30 14 309 16 2060 l1 2025 -28 58 c-37 75 -84 107 -164 113 -32 2 -70 -1 -85 -7z"/>
+              </g>
             </svg>
-            <h1 className={`text-xl font-black tracking-tighter ${isDarkMode ? 'text-white' : 'text-black'}`}>
-              MASTER CRM
-            </h1>
           </div>
           <button 
             onClick={() => setIsMobileMenuOpen(false)}
-            className={`md:hidden p-2 -mr-2 rounded-lg transition-colors cursor-pointer ${isDarkMode ? 'text-neutral-400 hover:bg-neutral-800 hover:text-white' : 'text-neutral-500 hover:bg-neutral-100 hover:text-black'}`}
+            className={`absolute right-4 md:hidden p-2 rounded-lg transition-colors cursor-pointer ${isDarkMode ? 'text-neutral-400 hover:bg-neutral-800 hover:text-white' : 'text-neutral-500 hover:bg-neutral-100 hover:text-black'}`}
           >
             <X className="w-5 h-5" />
           </button>
