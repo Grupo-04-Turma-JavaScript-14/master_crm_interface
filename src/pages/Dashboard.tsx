@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import { Users, UserPlus, Activity, TrendingUp, Star } from 'lucide-react';
 import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from 'recharts';
 import { api } from '../api/axios';
@@ -54,6 +54,7 @@ const Sparkline = ({ isDarkMode, colorClass }: { isDarkMode: boolean, colorClass
 
 export default function Dashboard() {
   const { isDarkMode } = useOutletContext<{ isDarkMode: boolean }>();
+  const navigate = useNavigate();
 
   const [metricas, setMetricas] = useState({
     totalClientes: 0,
@@ -250,7 +251,15 @@ export default function Dashboard() {
 
         {/* Recent Activity */}
         <div className={`p-6 rounded-3xl border transition-colors duration-300 ${isDarkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-200'}`}>
-          <h3 className={`text-lg font-bold tracking-tight mb-8 ${isDarkMode ? 'text-white' : 'text-black'}`}>Feed de Atividades</h3>
+          <div className="flex items-center justify-between mb-8">
+            <h3 className={`text-lg font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-black'}`}>Feed de Atividades</h3>
+            <button
+              onClick={() => navigate('/app/feed')}
+              className={`text-xs uppercase tracking-wider font-bold hover:underline transition-colors ${isDarkMode ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-black'}`}
+            >
+              Ver Tudo
+            </button>
+          </div>
           <div className="space-y-8 pl-2">
             {atividades.length === 0 ? (
               <p className={`text-sm font-medium ${isDarkMode ? 'text-neutral-600' : 'text-neutral-400'}`}>Nenhuma atividade recente.</p>

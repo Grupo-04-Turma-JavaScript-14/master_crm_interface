@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Clientes from './pages/Clientes';
 import Contatos from './pages/Contatos';
 import Usuarios from './pages/Usuarios';
+import FeedAtividades from './pages/FeedAtividades';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="clientes" element={<Clientes />} />
           <Route path="contatos" element={<Contatos />} />
           <Route path="usuarios" element={<Usuarios />} />
+          <Route path="feed" element={<FeedAtividades />} />
         </Route>
 
         {/* Fallback */}
