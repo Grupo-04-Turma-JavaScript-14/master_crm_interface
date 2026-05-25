@@ -164,7 +164,7 @@ export default function Dashboard() {
           return (
             <div 
               key={i} 
-              className={`relative overflow-hidden p-6 rounded-2xl border transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl group ${
+              className={`relative overflow-hidden p-6 rounded-2xl border transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl group cursor-pointer ${
                 isDarkMode 
                   ? 'bg-black border-neutral-800 hover:border-neutral-600' 
                   : 'bg-white border-neutral-200 hover:border-neutral-400'
@@ -204,7 +204,7 @@ export default function Dashboard() {
         <div className={`lg:col-span-2 p-6 rounded-3xl border transition-colors duration-300 ${isDarkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-200'}`}>
           <div className="flex items-center justify-between mb-8">
             <h3 className={`text-lg font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-black'}`}>Interações (7 Dias)</h3>
-            <select className={`text-xs uppercase font-bold tracking-wider rounded-lg px-3 py-1.5 border outline-none ${isDarkMode ? 'bg-black border-neutral-800 text-neutral-300' : 'bg-white border-neutral-200 text-neutral-600'}`}>
+            <select className={`text-xs uppercase font-bold tracking-wider rounded-lg px-3 py-1.5 border outline-none cursor-pointer ${isDarkMode ? 'bg-black border-neutral-800 text-neutral-300' : 'bg-white border-neutral-200 text-neutral-600'}`}>
               <option>Esta Semana</option>
             </select>
           </div>
@@ -255,7 +255,7 @@ export default function Dashboard() {
             <h3 className={`text-lg font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-black'}`}>Feed de Atividades</h3>
             <button
               onClick={() => navigate('/app/feed')}
-              className={`text-xs uppercase tracking-wider font-bold hover:underline transition-colors ${isDarkMode ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-black'}`}
+              className={`text-xs uppercase tracking-wider font-bold hover:underline transition-colors cursor-pointer ${isDarkMode ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-black'}`}
             >
               Ver Tudo
             </button>

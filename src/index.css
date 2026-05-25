@@ -30,6 +30,21 @@ body {
   @apply antialiased transition-colors duration-300;
 }
 
+/* Global: all interactive elements get pointer cursor */
+button,
+a,
+select,
+[role="button"],
+[onclick],
+summary,
+label[for],
+input[type="checkbox"],
+input[type="radio"],
+input[type="submit"],
+input[type="button"] {
+  cursor: pointer;
+}
+
 @utility glass-panel {
   @apply bg-white/5 dark:bg-slate-900/40 backdrop-blur-xl border border-white/10 dark:border-slate-800/60 shadow-2xl;
 }

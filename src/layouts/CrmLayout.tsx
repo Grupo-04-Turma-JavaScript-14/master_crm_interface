@@ -53,7 +53,7 @@ export default function CrmLayout() {
           </div>
           <button 
             onClick={() => setIsMobileMenuOpen(false)}
-            className={`md:hidden p-2 -mr-2 rounded-lg transition-colors ${isDarkMode ? 'text-neutral-400 hover:bg-neutral-800 hover:text-white' : 'text-neutral-500 hover:bg-neutral-100 hover:text-black'}`}
+            className={`md:hidden p-2 -mr-2 rounded-lg transition-colors cursor-pointer ${isDarkMode ? 'text-neutral-400 hover:bg-neutral-800 hover:text-white' : 'text-neutral-500 hover:bg-neutral-100 hover:text-black'}`}
           >
             <X className="w-5 h-5" />
           </button>
@@ -69,7 +69,7 @@ export default function CrmLayout() {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  "flex items-center px-4 py-3 rounded-lg transition-all duration-300 group",
+                  "flex items-center px-4 py-3 rounded-lg transition-all duration-300 group cursor-pointer",
                   isActive 
                     ? (isDarkMode ? "bg-white text-black" : "bg-black text-white")
                     : (isDarkMode ? "text-neutral-500 hover:bg-neutral-900 hover:text-white" : "text-neutral-500 hover:bg-neutral-100 hover:text-black")
@@ -85,7 +85,7 @@ export default function CrmLayout() {
         <div className={`p-6 border-t ${isDarkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
           <Link
             to="/login"
-            className={`flex items-center px-4 py-3 rounded-lg transition-colors duration-300 ${isDarkMode ? 'text-neutral-500 hover:text-white hover:bg-neutral-900' : 'text-neutral-500 hover:text-black hover:bg-neutral-100'}`}
+            className={`flex items-center px-4 py-3 rounded-lg transition-colors duration-300 cursor-pointer ${isDarkMode ? 'text-neutral-500 hover:text-white hover:bg-neutral-900' : 'text-neutral-500 hover:text-black hover:bg-neutral-100'}`}
           >
             <LogOut className="w-5 h-5 mr-3" />
             <span className="font-semibold text-sm tracking-wide">Sair da Conta</span>
@@ -99,7 +99,7 @@ export default function CrmLayout() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className={`md:hidden p-2 -ml-2 rounded-lg transition-colors ${isDarkMode ? 'text-neutral-400 hover:bg-neutral-800 hover:text-white' : 'text-neutral-500 hover:bg-neutral-100 hover:text-black'}`}
+              className={`md:hidden p-2 -ml-2 rounded-lg transition-colors cursor-pointer ${isDarkMode ? 'text-neutral-400 hover:bg-neutral-800 hover:text-white' : 'text-neutral-500 hover:bg-neutral-100 hover:text-black'}`}
             >
               <Menu className="w-5 h-5" />
             </button>
