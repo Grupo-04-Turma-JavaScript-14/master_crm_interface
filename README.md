@@ -320,6 +320,7 @@ A configuração do `vercel.json` garante o funcionamento correto do roteamento 
 - Mirelly
 - Samara
 - Mariana
+- Javier
 
 ---
 
