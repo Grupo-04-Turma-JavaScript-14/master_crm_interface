@@ -1,73 +1,173 @@
-# React + TypeScript + Vite
+# Master CRM Interface
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface frontend de um sistema CRM (Customer Relationship Management) moderno, construído com React, TypeScript e Tailwind CSS. Focado em gestão de clientes, contatos e usuários, com dashboard analítico e feed de atividades em tempo real.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Funcionalidades
 
-## React Compiler
+- **Dashboard** — Métricas animadas de clientes, contatos, usuários e oportunidades, com gráficos de barras interativos via Recharts
+- **Gestão de Clientes** — CRUD completo com busca, filtros, marcação de oportunidades (⭐) e visualização detalhada em modal
+- **Gestão de Contatos** — Cadastro e acompanhamento de contatos vinculados a clientes
+- **Gestão de Usuários** — Administração de usuários do sistema
+- **Feed de Atividades** — Timeline cronológica de interações e contatos, com busca e visualização detalhada
+- **Autenticação JWT** — Login e registro com token armazenado via `localStorage`
+- **Tema Claro/Escuro** — Alternância de tema persistida no `localStorage`
+- **Responsividade** — Sidebar com menu mobile e layout adaptável para todos os tamanhos de tela
+- **Animação Pointilhismo** — Animação visual generativa na tela de login
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Stack Tecnológica
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| Categoria        | Tecnologia                          |
+|-----------------|-------------------------------------|
+| Framework       | React 19                            |
+| Linguagem       | TypeScript 6                        |
+| Build Tool      | Vite 8                              |
+| Estilização     | Tailwind CSS 4                      |
+| Roteamento      | React Router DOM 7                  |
+| HTTP Client     | Axios                               |
+| Gráficos        | Recharts                            |
+| Ícones          | Lucide React                        |
+| Notificações    | React Hot Toast                     |
+| Utilitários     | clsx, tailwind-merge                |
+| Deploy          | Vercel                              |
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 📁 Estrutura do Projeto
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+├── api/
+│   └── axios.ts          # Instância do Axios com interceptor JWT
+├── assets/               # Imagens e SVGs do projeto
+├── components/
+│   ├── Avatar.tsx         # Componente de avatar de usuário
+│   ├── PointillismAnimation.tsx  # Animação canvas na tela de login
+│   ├── SidebarLogo.tsx    # Logo animada da sidebar
+│   └── TableSkeleton.tsx  # Skeleton loader para tabelas
+├── layouts/
+│   └── CrmLayout.tsx      # Layout principal com sidebar e header
+├── lib/
+│   └── utils.ts           # Utilitários (cn helper)
+├── pages/
+│   ├── Intro.tsx          # Página de introdução/landing
+│   ├── Login.tsx          # Autenticação e registro
+│   ├── Dashboard.tsx      # Métricas e gráficos
+│   ├── Clientes.tsx       # CRUD de clientes
+│   ├── Contatos.tsx       # CRUD de contatos
+│   ├── Usuarios.tsx       # Gestão de usuários
+│   └── FeedAtividades.tsx # Timeline de atividades
+└── App.tsx                # Configuração de rotas
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🚀 Como Rodar Localmente
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Pré-requisitos
+
+- Node.js 18+
+- npm ou yarn
+- Backend rodando (API REST)
+
+### Instalação
+
+```bash
+# Clone o repositório
+git clone https://github.com/seu-usuario/master-crm-interface.git
+cd master-crm-interface
+
+# Instale as dependências
+npm install
 ```
+
+### Configuração de Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+VITE_API_URL=http://localhost:4000
+```
+
+> Se a variável não for definida, a URL padrão `http://localhost:4000` será utilizada.
+
+### Executando
+
+```bash
+# Modo desenvolvimento
+npm run dev
+
+# Build para produção
+npm run build
+
+# Preview do build
+npm run preview
+
+# Lint
+npm run lint
+```
+
+---
+
+## 🔐 Autenticação
+
+A aplicação utiliza autenticação via **JWT**. O token é obtido no endpoint `/usuarios/logar` e armazenado no `localStorage` sob a chave `token`. O interceptor do Axios injeta automaticamente o token no header `Authorization: Bearer <token>` em todas as requisições autenticadas.
+
+**Rotas públicas:** `/` (Intro) e `/login`  
+**Rotas protegidas:** `/app/*` (Dashboard, Clientes, Contatos, Usuários, Feed)
+
+---
+
+## 🌐 Deploy
+
+O projeto inclui configuração para deploy na **Vercel** (`vercel.json`) com rewrite de todas as rotas para `index.html`, garantindo o funcionamento correto do roteamento client-side (SPA).
+
+```json
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
+```
+
+---
+
+## 📡 Integração com a API
+
+A interface consome uma API REST. Os principais endpoints utilizados são:
+
+| Método | Endpoint             | Descrição                    |
+|--------|----------------------|------------------------------|
+| POST   | `/usuarios/logar`    | Login (retorna JWT)          |
+| POST   | `/usuarios/cadastrar`| Cadastro de usuário          |
+| GET    | `/usuarios/all`      | Listar todos os usuários     |
+| GET    | `/clientes`          | Listar clientes              |
+| GET    | `/clientes/:id`      | Detalhes de um cliente       |
+| POST   | `/clientes`          | Criar cliente                |
+| PUT    | `/clientes/:id`      | Atualizar cliente            |
+| DELETE | `/clientes/:id`      | Deletar cliente              |
+| GET    | `/contatos`          | Listar contatos              |
+| POST   | `/contatos`          | Criar contato                |
+| PUT    | `/contatos/:id`      | Atualizar contato            |
+| DELETE | `/contatos/:id`      | Deletar contato              |
+
+---
+
+👨‍💻 Desenvolvedores
+- Marlos
+- João
+- Henriqu
+- Mirelly
+- Samara
+- Mariane
+
+---
+🤝 Colaboração
+
+Agradecemos a todos os colaboradores que participaram do desenvolvimento, testes e melhorias deste projeto.
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Consulte o arquivo `LICENSE` para mais detalhes.
