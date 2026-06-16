@@ -66,6 +66,8 @@ export default function PointillismAnimation() {
     let width = canvas.width = canvas.offsetWidth;
     let height = canvas.height = canvas.offsetHeight;
 
+    if (width === 0 || height === 0) return;
+
     let particles: Particle[] = [];
     let animationFrameId: number;
     let currentWordIndex = 0;

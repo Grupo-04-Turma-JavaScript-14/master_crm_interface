@@ -27,7 +27,7 @@
 }
 
 body {
-  @apply antialiased transition-colors duration-300;
+  @apply antialiased transition-colors duration-300 bg-white;
 }
 
 /* Global: all interactive elements get pointer cursor */
